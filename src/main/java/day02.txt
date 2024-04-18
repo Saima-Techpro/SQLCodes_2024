@@ -1,0 +1,128 @@
+----- Day 02 -----
+
+---  Create table
+
+CREATE TABLE students (  -- DDL => is used to create structure
+	id CHAR (4),
+	name VARCHAR (30),
+	age INT,
+	register_date DATE
+);
+
+-- How to read data from a table
+
+SELECT * FROM students; -- DQL => is used to read the data
+
+DROP TABLE students;  -- DDL => is used to create structure
+
+-- How to add data in a table
+
+INSERT INTO students VALUES ('01', 'Tom Hanks', 45, '2024-09-12');
+INSERT INTO students VALUES ('02', 'John Doe', 37, '2024-02-24');
+INSERT INTO students VALUES ('03', 'Emma Watson', 27, '2024-02-29');
+
+-- How to add data into specific fields
+
+INSERT INTO students (name, age) VALUES ('Jason Momoa', 45);
+INSERT INTO students (id, name) VALUES ('05', 'Nick Cage');
+INSERT INTO students (age, register_date) VALUES (25, '2024-03-30');
+
+SELECT * FROM students; -- works like System.out.println in Java
+
+
+----- CONSTRAINTS ------
+
+-- How to add constraints in atable
+
+CREATE TABLE employees (
+	id SERIAL,
+	name VARCHAR (20) NOT NULL,
+	age INT CHECK (age>=18 AND age<65),
+	email VARCHAR (40) UNIQUE,
+	salary REAL
+);
+
+-- Add data into this table
+
+-- INSERT INTO employees VALUES ( ,'', ,'', );
+/* Normal syntax that we follow when we try to add all values in a table => follow the
+   order of the fields as declared in the table creation.
+   BUt with SERIAL data type, we DO NOT need to add value because it will cause conflict.
+   So we need to add values by using 2nd way of adding into SPECIFC FIELDS
+*/
+
+INSERT INTO employees (name, age, email, salary) VALUES ('Ismail', 44, 'ia@gmail.com', 90000);
+INSERT INTO employees (age, email,salary) VALUES (35, 'ab@yahoo.com', 60000);  -- will show error => name field cannot be NULL
+INSERT INTO employees (name, email, salary) VALUES ('Maryam', 'md@gmail.com', 95000);  -- no error because age can be left null
+INSERT INTO employees (name, age, email, salary) VALUES ('Angelina Jolie', 67, 'aj@hotmail.com', 265000); -- will show error => because age has a CHECK Constraint where age cannot be more than 65
+INSERT INTO employees (name, age, email, salary) VALUES ('Tom Hanks', 59, 'ab@yahoo.com', 120000); -- this will be added because user no. 2 was not added in our database
+																								-- so that email doesnt exist in my database. thats why it's not considered duplicate at this point
+
+INSERT INTO employees (name, age, email, salary) VALUES ('Keira Knightly', 29, 'ab@yahoo.com', 130000); -- now we will see the error because this email ab@yahoo.com already exists in our db.
+INSERT INTO employees (name, age, email, salary) VALUES ('Keira Knightly', 29, 'kk@yahoo.com', 130000);
+
+
+
+
+SELECT * FROM employees;
+
+DROP TABLE employees;
+
+-- Add PRIMARY KEY Constarint
+
+-- 1st way of creating PRIMARY KEY
+-- add the keyword PRIMARY KEY next to the column name after data type
+
+CREATE TABLE books (
+	book_id SERIAL PRIMARY KEY,
+	book_name VARCHAR (30) NOT NULL,
+	publisher_name VARCHAR (30),
+	page_number INT
+);
+
+SELECT * FROM books;
+
+DROP TABLE books;
+
+-- 2nd way of adding Primary Key
+CREATE TABLE books1 (
+	book_id SERIAL,
+	book_name VARCHAR (30) NOT NULL,
+	publisher_name VARCHAR (30),
+	page_number INT,
+	CONSTRAINT id_pk PRIMARY KEY (book_id)
+);
+
+SELECT * FROM books1;
+
+-- How to create COMPOSITE PRIMARY KEY
+
+CREATE TABLE books2 (
+	book_id SERIAL,
+	book_name VARCHAR (30) NOT NULL,
+	publisher_name VARCHAR (30),
+	page_number INT,
+	CONSTRAINT composite_pk PRIMARY KEY (book_id, book_name)
+);
+
+SELECT * FROM books2;
+
+
+-- How to add FOREIGN KEY
+CREATE TABLE authors (
+	author_id SERIAL,
+	author_name VARCHAR (30) NOT NULL,
+	books_published INT,
+	CONSTRAINT fk_authors FOREIGN KEY (author_id) REFERENCES books(book_id)
+);
+
+SELECT * FROM authors;
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,207 @@
+----- Day 03 -----
+
+CREATE TABLE new_employees(
+	id CHAR (5) PRIMARY KEY,
+	name VARCHAR (40) UNIQUE,
+	salary INT NOT NULL,
+	start_date DATE
+);
+
+-- Creating table is DDL
+
+INSERT INTO new_employees VALUES ('1002', 'Donatello', 12000, '2018-04-14');
+INSERT INTO new_employees VALUES ('1003', null, 5000, '2018-04-14'); -- no error => UNIQUE allows one null
+INSERT INTO new_employees VALUES ('1004', 'Donatello', 5000, '2020-04-14'); -- error => name is not UNIQUE
+INSERT INTO new_employees VALUES ('1005', 'Michael Angelo', 11000, '2018-04-14');
+INSERT INTO new_employees VALUES ('1006', 'Leonardo', null, '2019-03-24'); -- error => salary can't be null
+INSERT INTO new_employees VALUES ('1007', 'Raphael', '', '2022-11-23');  -- error => data type mismatch
+INSERT INTO new_employees VALUES ('', 'April', 8000, '2022-04-14');  -- no error => empty string is not null
+INSERT INTO new_employees VALUES ('', 'Miss April', 10000, '2023-06-19'); -- error => empty string twice will not be accepted
+INSERT INTO new_employees VALUES ('1002', 'Splinter', 12000, '2024-03-14'); -- error => '1002' id already exists
+INSERT INTO new_employees VALUES (null, 'Fred', 14000, '2022-05-16'); -- error => PK doesn't allow null id
+INSERT INTO new_employees VALUES ('1008', 'Barnie', 10000, '2023-11-26');
+INSERT INTO new_employees VALUES ('1009', 'Wilma', 11000, '2023-11-30');
+INSERT INTO new_employees VALUES ('1010', 'Betty', 13000, '2023-09-24');
+
+-- Inserting data into a table is DML
+
+-- To see the table
+SELECT * FROM new_employees;
+
+
+
+
+
+CREATE TABLE addresses(
+	address_id CHAR (5),
+	dist VARCHAR (30),
+	street VARCHAR (20),
+	city VARCHAR (20),
+	CONSTRAINT add_fk FOREIGN KEY (address_id) REFERENCES new_employees (id)
+);
+
+
+
+
+INSERT INTO addresses VALUES ('1003', 'Ninja Dist', '40.Cad.', 'Washington');
+INSERT INTO addresses VALUES ('1003', 'Kaya Dist', '50.Cad.', 'Ankara');
+INSERT INTO addresses VALUES ('1002', 'Tas Dist', '30.Cad.', 'Konya');
+INSERT INTO addresses VALUES ('1012', 'Tas Sok', '30.Cad.', 'Konya');
+INSERT INTO addresses VALUES (Null, 'Tas Sok', '23.Cad.', 'Bursa');
+INSERT INTO addresses VALUES (Null, 'Ninja Dist', '40.Cad.', 'Florida');
+INSERT INTO addresses VALUES ('1005', 'DisneyLand', '30.Cad.', 'Florida');
+
+
+
+SELECT * FROM addresses;
+
+
+
+-- How to get specific data
+
+SELECT city FROM addresses;  -- Reading data is DQL
+
+
+
+----------- How to filter data through SQL Queries -------------
+
+-------- WHERE CONDITION --------
+
+-- From new_employees table, display the record whose salary is greater than 8000
+
+SELECT *
+FROM new_employees
+WHERE salary > 8000;
+
+-- From new_employees table, display the record whose salary is less than 8000
+SELECT *
+FROM new_employees
+WHERE salary < 8000;
+
+-- From new_employees table, display the record whose salary is 5000
+SELECT *
+FROM new_employees
+WHERE salary = 5000;
+
+
+-- From new_employees table, display the record whose name is Donatello
+SELECT *
+FROM new_employees
+WHERE name = 'Donatello';
+
+-- From addresses table, display the record whose id is 1003 and city Ankara
+
+SELECT *
+FROM addresses
+WHERE address_id = '1003' AND city = 'Ankara';
+
+
+-- From addresses table, display the record where city is 'Konya' or 'Bursa'
+
+SELECT *
+FROM addresses
+WHERE city = 'Konya' OR city = 'Bursa';
+
+
+-- From addresses table, display the record where city is 'Konya' or 'Istanbul'
+
+SELECT *
+FROM addresses
+WHERE city = 'Konya' OR city = 'Istanbul';
+
+
+-- ALL above queries are DQL
+
+
+SELECT * FROM new_employees;
+
+SELECT * FROM addresses;
+
+
+
+CREATE TABLE new_students(
+	id SERIAL PRIMARY KEY,
+	first_name VARCHAR (30),
+	last_name VARCHAR (30),
+	exam_score INT
+);
+
+
+INSERT INTO new_students (first_name, last_name, exam_score) VALUES
+	('Tom', 'Hanks', 85),
+	('Keira', 'Knightly', 92),
+	('Lenardo', 'Dicaprio', 78),
+	('Julia', 'Roberts', 88),
+	('Denzel', 'Washington', 95),
+	('Benedict', 'Cumberbatch', 88),
+	('Brad', 'Pitt', 91),
+	('Russel', 'Crowe', 89),
+	('Emma', 'Watson', 87),
+	('Judy', 'Dench', 97);
+
+
+SELECT * FROM new_students;
+
+
+---------- DELETE FROM ------------
+--- DELETE => DML
+
+-- From new_students table, delete the record whose first_name is 'Lenardo'
+
+DELETE
+FROM new_students
+WHERE first_name = 'Lenardo';
+
+-- DELETE ALL records from new_students;
+DELETE
+FROM new_students;
+
+-- From new_students table, delete the record whose exam_score 85
+DELETE
+FROM new_students
+WHERE exam_score = 85;
+
+-- From new_students table, delete the record whose id is 17
+DELETE
+FROM new_students
+WHERE id = 17;
+
+
+-- From new_students table, delete the record whose id is 15 or last_name is 'Dench'
+
+DELETE
+FROM new_students
+WHERE id = 15 OR last_name = 'Dench';
+
+
+SELECT * FROM new_students;
+
+
+---------- TRUNCATE, DELETE and DROP ----------
+
+-- TRUNCATE (hard)  vs. DELETE (soft)
+-- 1.  Both are used to remove data from the tables
+-- When we remove data using TRUNCATE, we can NOT revoke that data;
+-- whereas if we remove data using DELETE, we CAN revoke the data
+
+
+-- 2. TRUNCATE is DDL while DELETE is DML
+
+-- 3. With DELETE, we can use conditions to filter our query but with TRUNCATE, we can NOT use conditions
+
+
+-- DELETE ALL records from new_students;
+DELETE
+FROM new_students;
+
+
+-- DELETE ALL records from new_students;
+TRUNCATE TABLE new_students;
+
+-- To remove table COMPLETETLY from the database
+DROP TABLE new_students;
+
+
+
+SELECT * FROM new_students;
+

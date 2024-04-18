@@ -1,0 +1,62 @@
+-- for single line comment
+
+/*
+  for multile line
+  comments
+*/
+
+
+-- 1. Create database with SQL query
+CREATE DATABASE batch240;  -- SQL queries are not case sensitive. But for READABILITY, we recommend to write keywords CAP
+
+create database batch241;
+
+-- 2. Delete database using SQL query
+DROP DATABASE batch241;
+
+DROP DATABASE batch240;
+
+-- 3. Create a table using SQL query
+CREATE TABLE students (
+	id CHAR (4),
+	name VARCHAR (30),
+	age INT,
+	register_date DATE
+);
+
+-- 4. To see the table on console
+
+SELECT * FROM students;
+
+-- 5. Create a table from existing table
+CREATE TABLE students1 AS SELECT id, name FROM students;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
