@@ -1,0 +1,266 @@
+----------- Day 04 ----------
+
+CREATE TABLE primary_students(
+	student_id CHAR (5) PRIMARY KEY,
+	student_name VARCHAR (30),
+	email_address VARCHAR NOT NULL,
+	student_age NUMERIC (2) CHECK (student_age>5),
+	phone_number CHAR (10) UNIQUE
+);
+
+
+INSERT INTO primary_students VALUES ('1111', 'Ryan Brooks', 'rb@gmail.com', 11, '1234567890');
+INSERT INTO primary_students VALUES ('1112', 'Emma Williams', 'ew@gmail.com', 12, '2345678901');
+INSERT INTO primary_students VALUES ('1114', 'Alice Baker', 'ab@gmail.com', 10, '3456789012');
+
+-- INSERT INTO primary_students VALUES ('113', 'Tom Hanks', null, 123, '1234567890');  This query has 3 errorr in it
+
+INSERT INTO primary_students VALUES ('113', 'Tom Hanks', 'th@gmail.com', 15, '4567890123');
+
+
+-- How to add data to specific fields
+
+INSERT INTO primary_students (student_id, email_address, phone_number) VALUES ('1115', 'abc@outlook.com', '5678901234');
+INSERT INTO primary_students (student_id, email_address, phone_number) VALUES('1116', 'xyz@yahoo.com', '6789012345');
+
+INSERT INTO primary_students (student_id, email_address, phone_number) VALUES
+ 				('1117', 'bc@gmail.com', '6778901234') ,
+				('1118', 'pq@yahoo.com', '8889012345');
+
+
+-- To see the table
+SELECT * FROM primary_students;
+
+----------------- UPDATE - SET ---------------
+
+-- Update student_id 113 to 1113
+UPDATE primary_students
+SET student_id = '1113'
+WHERE student_id = '113';
+
+-- Update student_name to 'Anthony Quinn' where studnet_id is '1115'
+
+UPDATE primary_students
+SET student_name = 'Anthony Quinn'
+WHERE student_id = '1115';
+
+-- Change 'Tom Hanks' name to 'John Doe'
+UPDATE primary_students
+SET student_name= 'John Doe'
+WHERE student_name='Tom Hanks';
+
+
+-- Change email  'bc@gmail.com' to null
+UPDATE primary_students
+SET email_address= null
+WHERE email_address = 'bc@gmail.com' ;  --  email_address can NOT be NULL
+
+
+-- Change email  'bc@gmail.com' to 'bcd@yahoo.com'
+UPDATE primary_students
+SET email_address = 'bcd@yahoo.com'
+WHERE email_address = 'bc@gmail.com';
+
+SELECT * FROM primary_students;
+
+
+ ---------------- AGGREGATE FUNCTIONS ------------------
+ --- In PostgreSQL, we have 5 aggregate functions => MIN, MAX, SUM, COUNT, AVG
+
+
+-- Find out the minimum age from primary_students table.
+SELECT MIN(student_age) FROM primary_students;
+
+-- Find out the maximum age from primary_students table.
+
+SELECT MAX(student_age) FROM primary_students;
+
+
+-- Update all students' age to the maximum age
+
+UPDATE primary_students
+SET student_age = 15; -- HARD CODED
+
+-- Dynamic way
+UPDATE primary_students
+SET student_age = (SELECT MAX(student_age) FROM primary_students);
+
+SELECT * FROM primary_students;
+
+
+
+CREATE TABLE parents (
+	parent_id CHAR (5) PRIMARY KEY,
+	parent_name TEXT,
+	student_id CHAR (5),
+	parent_address TEXT,
+	parent_dob DATE
+);
+
+INSERT INTO parents VALUES('2111', 'Adam Brooks', '1111', 'Miami, FL', '1994-10-23');
+INSERT INTO parents VALUES('2112', 'Angie Williams', '1112', 'New York, US', '1987-02-13');
+INSERT INTO parents VALUES('2113', 'Andrew Duffy', '1113', 'Berlin, Germany', '1976-12-05');
+INSERT INTO parents VALUES('2114', 'John Baker', '1114', 'London, UK', '1980-07-07');
+INSERT INTO parents VALUES('2115', 'Lydia Smith', '1115', 'Toront, Canada', '1986-09-24');
+INSERT INTO parents VALUES('2116', 'Dogan Can', '1116', 'Istanbul, Turkiye', '1990-11-11');
+
+
+SELECT * FROM parents;
+
+-- Who is the oldest in parents table?
+
+SELECT MIN(parent_dob) FROM parents;
+ -- To find the name of the oldest parent
+ SELECT *
+ FROM parents
+ WHERE parent_dob = (SELECT MIN(parent_dob) FROM parents);
+
+ SELECT parent_name
+ FROM parents
+ WHERE parent_dob = (SELECT MIN(parent_dob) FROM parents);
+
+-- Who is the youngest in parents table?
+
+SELECT MAX(parent_dob) FROM parents;
+
+ -- To find the name of the oldest parent
+SELECT parent_name
+FROM parents
+WHERE parent_dob = (SELECT MAX(parent_dob) FROM parents);
+
+
+-- Change all date of births to Highest date of birth
+UPDATE parents
+SET parent_dob =(SELECT MIN(parent_dob) From parents);
+
+SELECT * FROM parents;
+
+
+CREATE TABLE workers(
+  worker_id SMALLINT,
+  worker_name VARCHAR(30),
+  worker_salary NUMERIC,
+
+  CONSTRAINT worker_id_pk PRIMARY KEY(worker_id)
+);
+
+
+INSERT INTO workers VALUES(101, 'Ali Can', 10000);
+INSERT INTO workers VALUES(102, 'Veli Han', 4000);
+INSERT INTO workers VALUES(103, 'Aisha Can', 7000);
+INSERT INTO workers VALUES(104, 'Angie Ocean', 12000);
+INSERT INTO workers VALUES(105, 'Musa Ahmet', 9000);
+INSERT INTO workers VALUES(106, 'Ali Can', 19000);
+INSERT INTO workers VALUES(107, 'Aygul Aksoy',13000);
+INSERT INTO workers VALUES(108, 'Hasan Basri', 16000);
+INSERT INTO workers VALUES(109, 'Fatih Tamer', 18000);
+INSERT INTO workers VALUES(110, 'Emel Ebru', 8000);
+
+
+
+SELECT * FROM workers;
+
+-- Find the maximum salary
+SELECT MAX(worker_salary) FROM workers;
+
+
+-- Find the minimum salary
+SELECT MIN(worker_salary) FROM workers;
+
+
+-------- ALIAS --------
+-- We use AS (alias) to give a temporary name to the field that contains result
+-- Like System.out.println("Total salary: "+counter); in JAVA
+
+SELECT MIN(worker_salary) AS minimum_salary FROM workers;
+
+-- Find the total number of workers (use ALIAS)
+
+SELECT COUNT(worker_id) AS total_numb_of_workers FROM workers;
+
+-- Find the total salary (use ALIAS)
+SELECT SUM(worker_salary) AS total_salary FROM workers;
+
+-- Find the average salary (use ALIAS)
+SELECT AVG(worker_salary) AS average_salary FROM workers;
+
+
+------------- Combining AGGREGATE FUNCTION and UPDATE-SET ------------
+
+-- Increase Veli's salary to 20% less than the highest salary
+
+-- 1. Find the highest salary
+SELECT MAX(worker_salary) FROM workers;  -- 19000
+
+-- 2. Calculate 20% less than the highest salary
+SELECT MAX(worker_salary)* 0.8 FROM workers; -- 15200
+
+-- 3. Now increase Veli's salary
+-- Hard coding
+UPDATE workers
+SET worker_salary = 15200
+WHERE worker_id = 102;
+
+
+-- Dynamic way
+UPDATE workers
+SET worker_salary = (SELECT MAX(worker_salary)* 0.8 FROM workers)
+WHERE worker_id = 102; -- OR WHERE worker_name = 'Veli Can';
+
+
+-- Decrease Ali's salary to 30% more than the lowest salary
+-- Dynamic way
+UPDATE workers
+SET worker_salary = (SELECT MIN(worker_salary)*1.3 FROM workers)
+WHERE worker_id = 101;
+
+
+-- Increase the salaries by 1000 (bonus) if the salaries are less than average salary
+
+UPDATE workers
+SET worker_salary =  worker_salary + 1000
+WHERE worker_salary < (SELECT AVG(worker_salary) FROM workers);
+
+
+-- Make the salaries equal to average salary if the salaries are less than average salary
+
+UPDATE workers
+SET worker_salary = (SELECT AVG(worker_salary) FROM workers)
+WHERE worker_salary < (SELECT AVG(worker_salary) FROM workers);
+
+
+
+----------------- INTERVIEW QUESTIONS ------------------
+-- How to select a record whose salary is second highest
+-- 1. Highest salary
+SELECT MAX(worker_salary) FROM workers;
+
+-- 2. Second highest
+SELECT MAX(worker_salary) AS second_highest_salary
+FROM workers
+WHERE worker_salary < (SELECT MAX(worker_salary) FROM workers);
+
+-- How to select a record whose salary is second lowest
+SELECT MIN(worker_salary) AS second_lowest_salary
+FROM workers
+WHERE worker_salary > (SELECT MIN(worker_salary) FROM workers);
+
+
+------ HW --------
+-- How to get the 3rd HIGHEST salary
+
+SELECT MAX (worker_salary) AS third_highest_salary
+FROM workers
+WHERE worker_salary < (SELECT MAX(worker_salary)
+					   FROM workers
+					   WHERE worker_salary <(SELECT MAX(worker_salary)FROM workers));
+
+
+-- How to get the 3rd LOWEST salary
+SELECT MIN (worker_salary) AS third_lowest_salary
+FROM workers
+WHERE worker_salary >(SELECT MIN(worker_salary)
+					  FROM workers
+					  WHERE worker_salary >(SELECT MIN(worker_salary)FROM workers));
+
+SELECT * FROM workers;
