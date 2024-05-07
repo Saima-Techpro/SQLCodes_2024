@@ -1,0 +1,387 @@
+------------------ Day 09 ----------------
+---------------- ALTER TABLE --------------
+
+-- ALTER TABLE is the keyword that we use to update / change structure of the table. (DDL)
+-- ADD COLUMN => to add new column on the existing table
+-- DROP COLUMN => to drop a column from the existing table
+-- RENAME COLUMN => change the name of the the existing column
+-- RENAME ... TO => change the name of the existing table
+-- ALTER COLUMN => to change data type, size etc. for existing column
+
+
+SELECT * FROM new_workers;
+
+-- Add new column 'age' with INT data type to the table new_workers
+ALTER TABLE new_workers
+ADD COLUMN age INT;
+
+-- Add new column 'remote' with boolean data type and set it 'true'
+ALTER TABLE new_workers
+ADD COLUMN remote BOOLEAN DEFAULT true;
+
+
+------------- HOW TO MODIFY DATA TYPE -----------------
+
+-- Add new column 'country' with VARCHAR data type and set it 'US'
+
+ALTER TABLE new_workers
+ADD COLUMN country VARCHAR DEFAULT 'US' ;
+
+
+-- Drop the column 'age'
+ALTER TABLE new_workers
+DROP COLUMN age;
+
+
+-- Change the data type of 'salary' field from smallint to REAL
+ALTER TABLE new_workers
+ALTER COLUMN salary TYPE REAL;
+
+-- Change the name of the column 'salary' to 'income'
+
+ALTER TABLE new_workers
+RENAME COLUMN salary TO income;
+
+
+-- Change the data type of 'income' field from REAL to VARCHAR
+ALTER TABLE new_workers
+ALTER COLUMN income TYPE VARCHAR;
+
+
+
+-- Change the data type of 'income' field back to REAL
+
+ALTER TABLE new_workers
+ALTER COLUMN income TYPE REAL; -- ERROR => because SQL doesn't allow auto-casting from STRING to NUMBERIC data type
+
+-- So you have to force the type casting by using 'USING income::real'command
+-- You need to force Type casting ONLY when you're changing STRING to NUMERIC
+
+ALTER TABLE new_workers
+ALTER COLUMN income TYPE REAL USING income::real; -- NO error in type casting
+
+
+-- Change the name of the table
+
+ALTER TABLE new_workers
+RENAME TO remote_workers;
+
+
+SELECT * FROM new_workers;
+
+SELECT * FROM remote_workers;
+
+---------------------------------------------------
+CREATE TABLE random (
+	id VARCHAR (10),
+	name VARCHAR (20),
+	salary INT,
+	address VARCHAR (60)
+
+);
+
+INSERT INTO random VALUES ('3', 'Tom', 9000, '23R, FL, US');
+INSERT INTO random VALUES ('8', 'Ali', 8800, '65B, TX, US');
+INSERT INTO random VALUES ('24', 'John', 9900, '21M, AZ, US');
+
+
+SELECT * FROM random;
+
+-- Change data type of salary column to REAL
+ALTER TABLE random
+ALTER COLUMN salary TYPE REAL;
+
+-- Change data type of salary column to VARCHAR
+ALTER TABLE random
+ALTER COLUMN salary TYPE VARCHAR;
+
+-- Change data type of salary column to int
+ALTER TABLE random
+ALTER COLUMN salary TYPE int USING salary::int;
+
+
+-- Change data type of address column to int
+
+ALTER TABLE random
+ALTER COLUMN address TYPE int; -- ERROR => data type mismatch
+
+
+ALTER TABLE random
+ALTER COLUMN address TYPE int USING address::integer; -- still shows ERROR... because there are numbers AND letters inside this columns
+
+
+SELECT * FROM random;
+
+--------------- HOW TO MODIFY CONSTARINTS ---------------
+
+
+CREATE TABLE it_employees (
+  id CHAR(9),
+  name VARCHAR (30),
+  state VARCHAR (20),
+  company VARCHAR (20),
+  number_of_employees numeric (5)
+
+);
+
+
+INSERT INTO it_employees VALUES(123456789, 'John Walker', 'Florida', 'IBM', 34500);
+INSERT INTO it_employees VALUES(456789012, 'Veli Han', 'Arizona', 'GOOGLE', 90000);
+INSERT INTO it_employees VALUES(234567890, 'Brad Pitt', 'Florida', 'APPLE', 45500);
+INSERT INTO it_employees VALUES(345678901, 'Eddie Murphy', 'Texas', 'IBM', 23700);
+INSERT INTO it_employees VALUES(567890123, 'Yusuf Arturk', 'Washington', 'APPLE', 45500);
+INSERT INTO it_employees VALUES(589670123, 'Tuba Omar', 'Texas', 'MICROSOFT', 60000);
+INSERT INTO it_employees VALUES(476589012, 'Brad Pitt', 'Texas', 'GOOGLE', 90000);
+INSERT INTO it_employees VALUES(623456710, 'Mark Stone', 'Pennsylvania', 'IBM', 23700);
+INSERT INTO it_employees VALUES(123456710, 'Ali Can', 'Pennsylvania', 'IBM', 25700);
+
+
+
+-- Add a column name_of_ceo with data type VARCHAR to the table it_employees
+
+ALTER TABLE it_employees
+ADD COLUMN name_of_ceo VARCHAR;
+
+-- Add the constraint 'NOT NULL'
+
+ALTER TABLE it_employees
+ALTER COLUMN name_of_ceo SET NOT NULL; -- ERROR => 9 records already exist which have null values ... can't decalre this column NOT NULL now
+
+
+-- Either set the values one by one  for the name_of_ceo
+
+UPDATE it_employees
+SET name_of_ceo = 'Tom Hanks'
+WHERE company ILIKE 'google';  -- ILIKE ignore the upper / lower case
+
+-- or drop the table, add constraint and add all values later
+DROP TABLE it_employees;
+
+
+-- CREATE it again
+
+CREATE TABLE it_employees (
+  id CHAR(9),
+  name VARCHAR (30),
+  state VARCHAR (20),
+  company VARCHAR (20),
+  number_of_employees numeric (5)
+
+);
+
+
+-- Add a column name_of_ceo with data type VARCHAR to the table it_employees
+
+ALTER TABLE it_employees
+ADD COLUMN name_of_ceo VARCHAR;
+
+-- Add the constraint 'NOT NULL'
+
+ALTER TABLE it_employees
+ALTER COLUMN name_of_ceo SET NOT NULL;  -- NOW it will NOT show any error because the table doesn't have ANY value at the moment
+                                        -- so it's easy to set the constraint NOT NULL
+
+
+
+-- NOW add the values in it_employees table
+
+INSERT INTO it_employees VALUES(123456789, 'John Walker', 'Florida', 'IBM', 34500, 'Arvind Krishna');
+INSERT INTO it_employees VALUES(456789012, 'Veli Han', 'Arizona', 'GOOGLE', 90000, 'Sundar Pichai');
+INSERT INTO it_employees VALUES(234567890, 'Brad Pitt', 'Florida', 'APPLE', 45500, 'Tim Cook');
+INSERT INTO it_employees VALUES(345678901, 'Eddie Murphy', 'Texas', 'IBM', 23700, 'Arvind Krishna');
+INSERT INTO it_employees VALUES(567890123, 'Yusuf Arturk', 'Washington', 'APPLE', 45500, 'Tim Cook');
+INSERT INTO it_employees VALUES(589670123, 'Tuba Omar', 'Texas', 'MICROSOFT', 60000, 'Satya Nadella');
+INSERT INTO it_employees VALUES(476589012, 'Brad Pitt', 'Texas', 'GOOGLE', 90000, 'Sundar Pichai');
+INSERT INTO it_employees VALUES(623456710, 'Mark Stone', 'Pennsylvania', 'IBM', 23700, 'Arvind Krishna');
+INSERT INTO it_employees VALUES(123456710, 'Ali Can', 'Pennsylvania', 'IBM', 25700, 'Arvind Krishna');
+
+-- ADD constraint NOT NULL to number_of_employees field
+
+ALTER TABLE it_employees
+ALTER COLUMN number_of_employees SET NOT NULL; -- No cell is empty in number_of_employees column, so there's no problem in setting the new constraint as NOT NULL
+
+
+-- Add a new value in company field to check if our CONSTARINTS are working or not
+
+INSERT INTO it_employees (company) VALUES ('ORACLE'); -- NOT ADDED  because number_of_employees column CANNOT be null now
+
+INSERT INTO it_employees (company, number_of_employees ) VALUES ('ORACLE', 50000); -- NOT ADDED  because name_of_ceo column CANNOT be null now
+
+
+INSERT INTO it_employees (company, number_of_employees, name_of_ceo ) VALUES ('ORACLE', 50000, 'Safra Catz');  -- ADDED :)
+
+
+
+-- Add UNIQUE constraint to id field
+
+ALTER TABLE it_employees
+ADD CONSTRAINT id_unique UNIQUE (id);
+
+-- Add value '123456789' to id where company is 'ORACLE'
+UPDATE it_employees
+SET id = '123456789'
+WHERE company ILIKE 'ORACLE'; -- UNIQUE constarint has been added .. so it does NOT allow duplicate value
+
+
+UPDATE it_employees
+SET id = '167892345'
+WHERE company ILIKE 'ORACLE';
+
+
+SELECT * FROM it_employees;
+
+---------------------------- MODIFY SIZE ----------------
+
+-- SIZE means the number of characters allowed in a field
+
+SELECT * FROM employees1;
+
+
+-- Add a column employee_address with string data type and size 5
+
+ALTER TABLE employees1
+ADD COLUMN employee_address VARCHAR (5);
+
+
+-- Add a value
+INSERT INTO  employees1 VALUES (17, 'Tom', 'Hanks', 'US');
+
+-- Increase the size of the column employee_address to 10
+
+ALTER TABLE employees1
+ALTER COLUMN employee_address TYPE CHAR (10);
+
+
+-- Add a value
+INSERT INTO  employees1 VALUES (17, 'John', 'Doe', 'Texas, US');
+
+
+-- Decrease the size of the column employee_address to 5
+
+ALTER TABLE employees1
+ALTER COLUMN employee_address TYPE CHAR (5); -- ERROR => A value with 9 characters already exist in this cloumn.. so you can NOT DECREASE the size
+
+-- When we modify the size of any field, it can NOT be less than the length of the existing values. It SHOULD be greater than the maximum numbe of characters
+
+
+SELECT * FROM employees1;
+
+
+------------------------ JOINS ---------------------
+-- JOINS are used to join/combine data from two or more TABLES
+-- They're always used with ON statement
+
+-- INNER JOIN: it returns common data from two tables according to the given filter
+-- LEFT JOIN: it returns ALL values from first table AND common values according to the given filter
+-- RIGHT JOIN: it returns ALL values from second table AND common values according to the given filter
+-- FULL JOIN: it returns ALL values from BOTH tables according to the given filter
+-- SELF JOIN: it works with SINGLE table, it works with it SELF, and returns data according to the given filter
+
+
+
+CREATE TABLE my_companies(
+  company_id CHAR(3),
+  company_name VARCHAR(20)
+);
+
+INSERT INTO my_companies VALUES(100, 'IBM');
+INSERT INTO my_companies VALUES(101, 'GOOGLE');
+INSERT INTO my_companies VALUES(102, 'MICROSOFT');
+INSERT INTO my_companies VALUES(103, 'APPLE');
+
+SELECT * FROM my_companies;
+
+
+
+CREATE TABLE orders(
+  company_id CHAR(3),
+  order_id CHAR(3),
+  order_date DATE
+);
+
+INSERT INTO orders VALUES(101, 11, '17-Apr-2023');
+INSERT INTO orders VALUES(102, 22, '25-Nov-2023');
+INSERT INTO orders VALUES(103, 33, '19-Jan-2023');
+INSERT INTO orders VALUES(104, 44, '20-Aug-2023');
+INSERT INTO orders VALUES(105, 55, '21-Oct-2023');
+
+
+SELECT * FROM orders;
+
+SELECT * FROM my_companies;
+
+
+
+--INNER JOIN
+-- Find the company name, order date , order id for company that exists in both tables
+
+SELECT company_name, order_id, order_date
+FROM my_companies  INNER JOIN orders
+ON my_companies.company_id = orders.company_id;
+
+
+-- LEFT JOIN
+
+SELECT company_name, order_id, order_date
+FROM my_companies mc LEFT JOIN orders o
+ON mc.company_id = o.company_id;
+
+
+-- RIGHT JOIN
+
+SELECT company_name, order_id, order_date
+FROM my_companies mc RIGHT JOIN orders o
+ON mc.company_id = o.company_id;
+
+-- ORDER of the tables MATTERS (it's important!!!)
+SELECT company_name, order_id, order_date
+FROM  orders o RIGHT JOIN  my_companies mc
+ON mc.company_id = o.company_id;
+
+
+--FULL JOIN
+
+SELECT company_name, order_id, order_date
+FROM my_companies mc FULL JOIN orders o
+ON mc.company_id = o.company_id;
+
+
+
+
+CREATE TABLE jobs(
+  id CHAR(2),
+  name VARCHAR(20),
+  title VARCHAR(40),
+  manager_id CHAR(2)
+);
+
+INSERT INTO jobs VALUES(1, 'Ali Can', 'SDET', 2);
+INSERT INTO jobs VALUES(2, 'John Walker', 'QA', 3);
+INSERT INTO jobs VALUES(3, 'Angie Star', 'QA Lead', 4);
+INSERT INTO jobs VALUES(4, 'Amy Sky', 'CEO', 5);
+
+
+SELECT * FROM jobs;
+
+
+
+-- SELF JOIN
+-- Find the name of the manager of each employee
+
+-- SELECT j1.name, j2.name
+-- FROM jobs j1 SELF JOIN jobs j2
+-- ON j1.manager_id = j2.id;  -- ERROR => INNER JOIN keyword is acceptable in ORACLE database
+
+-- For POSTGRES, we need to use INNER JOIN keyword
+
+SELECT j1.name AS name_of_employee, j2.name AS name_of_manager
+FROM jobs j1 INNER JOIN jobs j2
+ON j1.manager_id = j2.id;
+
+
+
+
+
+SELECT * FROM orders;
+
+SELECT * FROM my_companies;

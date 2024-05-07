@@ -1,0 +1,461 @@
+--------------- Day 08 ------------------
+CREATE TABLE new_workers (
+  id CHAR(9),
+  name VARCHAR(50),
+  state VARCHAR(50),
+  salary SMALLINT,
+  company VARCHAR(20),
+  number_of_employees numeric(5)
+
+);
+
+
+INSERT INTO new_workers VALUES(123451760, 'Ali Can', 'Pennsylvania', 8000, 'GOOGLE', 90000);
+INSERT INTO new_workers VALUES(123456789, 'John Walker', 'Florida', 2500, 'IBM', 34500);
+INSERT INTO new_workers VALUES(456789012, 'Veli Han', 'Arizona', 4000, 'GOOGLE', 90000);
+INSERT INTO new_workers VALUES(234567890, 'Ayse Gul', 'Florida', 1500, 'APPLE', 45500);
+INSERT INTO new_workers VALUES(345678901, 'Eddie Murphy', 'Texas', 3000, 'IBM', 23700);
+INSERT INTO new_workers VALUES(567890123, 'Yusuf Arturk', 'Washington', 8000, 'APPLE', 45500);
+INSERT INTO new_workers VALUES(456789012, 'Eddie Murphy', 'Virginia', 1000, 'GOOGLE', 90000);
+INSERT INTO new_workers VALUES(567890123, 'Eddie Murphy', 'Texas', 7000, 'MICROSOFT', 60000);
+INSERT INTO new_workers VALUES(456789012, 'Ayse Gul', 'Texas', 1500, 'GOOGLE', 90000);
+INSERT INTO new_workers VALUES(123456710, 'Mark Stone', 'Pennsylvania', 2500, 'IBM', 23700);
+INSERT INTO new_workers VALUES(123456710, 'Ali Can', 'Pennsylvania', 5000, 'IBM', 23700);
+INSERT INTO new_workers VALUES(785690123, 'Fatih Tamer', 'Texas', 9000, 'MICROSOFT', 60000);
+INSERT INTO new_workers VALUES(123456789, 'John Walker', 'Florida', 5000, 'GOOGLE', 90000);
+
+
+-- Find total salary for each name
+
+SELECT name, SUM(salary) AS total_salary
+FROM new_workers
+GROUP BY name;
+
+-- Find total number of employees for each state and order in descending order
+
+SELECT state, COUNT(id) AS total_number_of_employees
+FROM new_workers
+GROUP BY state
+ORDER BY COUNT(id) DESC;
+
+-- OR use the name of the temporary column
+
+SELECT state, COUNT(id) AS total_number_of_employees
+FROM new_workers
+GROUP BY state
+ORDER BY total_number_of_employees DESC;
+
+-- Find total number of employees for each company which is paying salary more than 4000
+
+SELECT company,  COUNT(name) AS total_number_of_employees
+FROM new_workers
+WHERE salary > 4000   -- WHERE condition can NOT be used after GROUP BY
+GROUP BY company;
+
+-- Find minimum and maximum salary for each company
+SELECT company, MAX(salary) AS max_salary, MIN(salary) AS min_salary
+FROM new_workers
+GROUP BY company;
+
+
+
+-- Find total salary for each employee whose total salary is more than 5000
+/*
+SELECT name,SUM(salary) AS total_salary
+FROM new_workers
+WHERE salary>5000  -- This WHERE condition is filtering the data individually BEFORE grouping
+GROUP BY name;
+*/
+
+
+SELECT name,SUM(salary) AS total_salary
+FROM new_workers
+GROUP BY name
+HAVING SUM(salary)>5000;  -- HAVING Clause is used to filter data AFTER grouping
+
+
+
+----------------- HAVING CLAUSE -------------------
+-- HAVING Clause is used to filter the result of AGGREGATE FUNCTIONS
+-- HAVING Clause works in combination with GROUP BY
+-- Both WHERE condition and HAVING Clause are used to filter the data
+-- DIFFERENCE: WHERE condition filters the individual data BEFORE grouping;
+--			   while HAVING Clause filters the result AFTER grouping.
+-- HAVING Clause works with AGGREGATE FUNCTIONS ONLY.
+
+SELECT * FROM new_workers;
+
+-- Find the total number of employees per state that has more than 100,000 employees
+
+
+SELECT state, COUNT (name) AS total_num_employees
+FROM new_workers
+GROUP BY state
+HAVING SUM(number_of_employees) > 100000;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SELECT state, COUNT(name) AS total_employees
+FROM new_workers
+GROUP BY state
+HAVING SUM(number_of_employees) > 100000;
+
+
+-- Find the minimum salary values that are above 2000 per company
+SELECT company, MIN(salary) AS min_salary
+FROM new_workers
+GROUP BY company
+HAVING MIN(salary) > 2000;
+
+
+-- Find the maximum salary values that are above 7000 per company
+
+SELECT company, MAX(salary) AS max_salary
+FROM new_workers
+GROUP BY company
+HAVING MAX(salary) > 7000;
+
+
+
+SELECT * FROM new_workers;
+
+
+
+-------------------- UNION, UNION ALL, INTERSECT, EXCEPT ----------------------
+
+
+CREATE TABLE alice_books (
+    book_id INT PRIMARY KEY,
+    book_title VARCHAR(100)
+);
+
+
+
+INSERT INTO alice_books (book_id, book_title)
+VALUES
+    (1, 'The Great Gatsby'),
+    (2, 'To Kill a Mockingbird'),
+    (3, 'Pride and Prejudice'),
+    (4, 'Jane Eyre'),
+    (5, 'Animal Farm');
+
+
+
+CREATE TABLE bob_books (
+    book_id INT PRIMARY KEY,
+    book_title VARCHAR(100)
+);
+
+INSERT INTO bob_books (book_id, book_title)
+VALUES
+    (2, 'To Kill a Mockingbird'),
+    (4, '1984'),
+    (6, 'The Catcher in the Rye'),
+    (5, 'Animal Farm');
+
+
+
+CREATE TABLE john_books (
+    book_id INT PRIMARY KEY,
+    book_title VARCHAR(100)
+);
+
+
+INSERT INTO john_books (book_id, book_title)
+VALUES
+    (9, 'Psychology of Money'),
+    (12, 'Political Economy'),
+    (7, 'Computational Thinking'),
+    (5, 'Animal Farm');
+
+
+-- Find the title of books read by Alice
+
+SELECT book_title
+FROM alice_books;
+
+-- Find the title of books read by Bob
+
+
+SELECT book_title
+FROM bob_books;
+
+
+
+-- Create a list of all the books read by both Alice and Bob (without duplicates)
+
+SELECT  book_title
+FROM alice_books
+
+UNION
+
+SELECT book_title
+FROM bob_books
+
+--------------- UNION OPERATOR -----------------
+-- It is used to combine or unite the result of 2 or more queries.
+-- It returns UNIQUE values only (repeated values/data/records are printed only ONCE)
+-- Data type of the columns should be SAME; number of columns should be SAME; order of the columns (in terms of data type type) should be SAME
+-- Names of the columns can be DIFFERENT as long as their data type is SAME
+-- The columns can be from different tables
+
+-- We can use UNION Operator for more than 2 queries as well
+
+SELECT  book_title
+FROM alice_books
+
+UNION
+
+SELECT book_title
+FROM bob_books
+
+UNION
+
+SELECT book_title
+FROM john_books
+
+
+-- Create a list of all the books read by both Alice and Bob (WITH duplicates)
+
+SELECT  book_title
+FROM alice_books
+
+UNION ALL
+
+SELECT book_title
+FROM bob_books
+
+--------------- UNION ALL OPERATOR -----------------
+-- It is used to combine or unite the result of 2 or more queries.
+-- It does NOT return UNIQUE values. (repeated values/data/records are also returned)
+-- Data type of the columns should be SAME; number of columns should be SAME; order of the columns (in terms of data type type) should be SAME
+-- Names of the columns can be DIFFERENT as long as their data type is SAME
+-- The columns can be from different tables
+
+-- We can use UNION ALL Operator for more than 2 queries as well
+
+SELECT  book_title
+FROM alice_books
+
+UNION ALL
+
+SELECT book_title
+FROM bob_books
+
+UNION ALL
+
+SELECT book_title
+FROM john_books
+
+
+-- Create a list of the books read by BOTH Alice and Bob (common values/ common books)
+
+SELECT  book_title
+FROM alice_books
+
+INTERSECT
+
+SELECT book_title
+FROM bob_books
+
+
+
+-- We can use INTERSECT Operator for more than 2 queries as well
+
+SELECT  book_title
+FROM alice_books
+
+INTERSECT
+
+SELECT book_title
+FROM bob_books
+
+INTERSECT
+
+SELECT book_title
+FROM john_books
+
+--------------- INTERSECT OPERATOR -----------------
+-- It is used to combine or unite the result of 2 or more queries.
+-- It returns COMMON values.
+-- It returns UNIQUE values/data(repeated values/data/records are returned ONCE only)
+-- Data type of the columns should be SAME; number of columns should be SAME; order of the columns (in terms of data type type) should be SAME
+-- Names of the columns can be DIFFERENT as long as their data type is SAME
+-- The columns can be from different tables
+
+
+
+
+-- Create a list of the books read by Alice BUT NOT by Bob (i.e. Alice read those books but Bob didn't)
+SELECT  book_title
+FROM alice_books
+
+EXCEPT
+
+SELECT book_title
+FROM bob_books
+
+-- What if we change the position of the queries
+-- Create a list of the books read by Bob BUT NOT by Alice (i.e. Bob read those books but Alice didn't)
+SELECT book_title
+FROM bob_books
+
+EXCEPT
+
+SELECT  book_title
+FROM alice_books
+
+
+--------------- EXCEPT (MINUS) OPERATOR -----------------
+-- It is used to combine or unite the result of 2 or more queries.
+-- It extracts the result of the FIRST query from the result of the second query (returns UN-COMMON values)
+-- It returns UNIQUE values/data(repeated values/data/records are returned ONCE only)
+-- Data type of the columns should be SAME; number of columns should be SAME; order of the columns (in terms of data type type) should be SAME
+-- Names of the columns can be DIFFERENT as long as their data type is SAME
+-- The columns can be from different tables
+
+SELECT * FROM john_books;
+
+SELECT * FROM bob_books;
+SELECT * FROM alice_books;
+
+----------------------------------------------------------
+
+
+CREATE TABLE employees_a (
+    employee_id INT PRIMARY KEY,
+    employee_name VARCHAR(30),
+    department VARCHAR(20)
+);
+
+INSERT INTO employees_a (employee_id, employee_name, department)
+VALUES
+    (1, 'John Smith', 'HR'),
+    (2, 'Alice Johnson', 'IT'),
+    (3, 'Bob Williams', 'Finance'),
+    (4, 'Eva Davis', 'Marketing');
+
+
+
+CREATE TABLE employees_b (
+    employee_id INT PRIMARY KEY,
+    employee_name VARCHAR(30),
+    department VARCHAR(20)
+);
+
+INSERT INTO employees_b (employee_id, employee_name, department)
+VALUES
+    (2, 'Alice Johnson', 'IT'),
+    (3, 'Bob Williams', 'Finance'),
+    (5, 'Charlie Brown', 'Sales'),
+    (6, 'Grace Miller', 'HR');
+
+
+-- Find the distinct (unique) list of all employees across both tables
+
+SELECT *
+FROM employees_a
+UNION
+SELECT *
+FROM employees_b;
+
+--OR
+
+SELECT employee_name
+FROM employees_a
+UNION
+SELECT employee_name
+FROM employees_b;
+
+-- Find the list of all employees from both tables who work in HR department
+
+SELECT *
+FROM employees_a
+WHERE department = 'HR'
+
+UNION ALL
+
+SELECT *
+FROM employees_b
+WHERE department = 'HR';
+
+
+
+-- Find the list of employees who are in both tables (COMMON) in IT department
+
+SELECT *
+FROM employees_a
+WHERE department = 'IT'
+
+INTERSECT
+
+SELECT *
+FROM employees_b
+WHERE department = 'IT';
+
+-- Find the employees from employees_a table who are NOT in employees_b
+
+SELECT employee_name
+FROM employees_a
+EXCEPT
+SELECT employee_name
+FROM employees_b
+
+-- Find the employees from employees_b table who are NOT in employees_a
+
+SELECT employee_name
+FROM employees_b
+
+EXCEPT
+
+SELECT employee_name
+FROM employees_a
+
+
+
+------------------- String Manipulation ------------------
+
+SELECT * FROM new_workers;
+
+
+-- Retrieve distinct name from new_workers table
+
+SELECT DISTINCT name
+FROM new_workers;
+
+-- Retrieve distinct names and their length from new_workers table
+SELECT DISTINCT name , LENGTH(name) AS length_of_name
+FROM new_workers;
+
+-- To remove spaces from String
+SELECT TRIM(name)
+FROM new_workers;
+
+-- Display state and first 3 characters of state name
+SELECT state, SUBSTRING(state, 1, 3) AS two_chars
+FROM new_workers;
+
+-- Display only first letter as Caps
+SELECT INITCAP(company)
+FROM new_workers;
+
+
+-- Display names in upper case and state as lowercase
+SELECT UPPER(name), LOWER (state)
+FROM new_workers;

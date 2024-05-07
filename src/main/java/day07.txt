@@ -1,0 +1,296 @@
+--------------- Day 07 --------------
+------------NOT LIKE Operator with WILDCARDS -------------
+
+CREATE TABLE words(
+  word_id CHAR(10) UNIQUE,
+  word VARCHAR(30) NOT NULL,
+  number_of_letters SMALLINT
+);
+
+
+INSERT INTO words VALUES (1001, 'hot', 3);
+INSERT INTO words VALUES (1002, 'hat', 3);
+INSERT INTO words VALUES (1003, 'hit', 3);
+INSERT INTO words VALUES (1004, 'hbt', 3);
+INSERT INTO words VALUES (1008, 'hct', 3);
+INSERT INTO words VALUES (1005, 'adem', 4);
+INSERT INTO words VALUES (1006, 'selena', 6);
+INSERT INTO words VALUES (1007, 'yusuf', 5);
+INSERT INTO words VALUES (1009, 'learn', 5);
+INSERT INTO words VALUES (1010, 'techpro', 7);
+
+
+
+-- Find words which do not end with 't' and 'f'
+
+SELECT *
+FROM words
+WHERE word NOT LIKE '%t' AND word NOT LIKE '%f';
+
+-- Find words which do not have 'a' and 'e' as second character
+
+SELECT *
+FROM words
+WHERE word NOT LIKE '_a%' AND word NOT LIKE '_e%';
+
+
+-- Find words whose first character is 'h', second charcater can be any 'o', 'a' or 'i' and the last character must be 't'
+-- 1st way:
+SELECT *
+FROM words
+WHERE word LIKE 'ho%t' OR word LIKE 'ha%t' OR word LIKE 'hi%t';
+
+
+-- 2nd Way: (RECOMMENDED)
+
+SELECT *
+FROM words
+WHERE REGEXP_LIKE (word, 'h[oai](.*)t');
+
+/*
+ ----------- NOTES about REGEX	(Regular Epxressions) with LIKE Operator -------------
+
+1. REGEXP_LIKE Operator: We use this operator for search operation
+  Syntax:
+  SELECT *
+  FROM table_name
+  WHERE REGEXP_LIKE (column_name, 'pattern that we are looking for in String Data')
+
+2. REGEXP_LIKE Operator works with STRING data type
+
+3. We can use REGEX operator with ~ sign
+   Syntax:
+  SELECT *
+  FROM table_name
+  WHERE column_name sign ~ 'pattern that we are looking for in String Data'
+
+4.  Symbols
+    (.*) looks for multiple characters => works the same way as % sign in wildcards; you can use it without parenthesis as well like .*
+	(.) looks for single character
+	$ => last character
+	'^' carrot sign => to ensure we are searching for first character (given inside the square brackets)
+	        e.g. '^[asy]' means a, s and y(given inside the square brackets) should be first character only
+    '^' carrot sign => can also be used to exclude some data from search operation
+            e.g. '^[^asy]' with one ^ inside the square brackets => a, s, and y (or any given letters) should NOT be the first characters for my data
+
+5. Pattern searching:
+    [aoi] => any of the given letters inside the square brackets
+	[a-f] => all character inside the square brackets (from a to f)
+
+
+*/
+
+-- OR with ~ sign (REGEXP_LIKE is replaced with ~ sign and the syntax is slightly changed as well)
+
+SELECT *
+FROM words
+WHERE word ~ 'h[aoi](.*)t';
+
+
+-- Find words whose first character is 'h', second charcater can be any from 'a' to 'f' and the last character must be 't'
+-- 1st way with REGEXP_LIKE
+SELECT *
+FROM words
+WHERE REGEXP_LIKE(word,'h[a-f](.*)t'); -- works even without $ sign for the last character
+
+--2nd way: with ~ sign
+SELECT *
+FROM words
+WHERE word ~ 'h[a-f](.*)t$';
+
+
+-- Find words whose first character is any 'a', 's', or 'y'
+
+SELECT *
+FROM words
+WHERE word ~ '^[asy].*';
+
+-- Find words whose first character is NOT 'a', 's', or 'y'
+SELECT *
+FROM words
+WHERE word ~ '^[^asy].*';
+
+
+-- Find words whose last character is 'm', 'o'  or 'a'
+
+SELECT *
+FROM words
+WHERE word ~ '(.*)[moa]$';
+
+-- Find words which start with 's' and end with 'a'
+
+-- 1st way:
+SELECT *
+FROM words
+WHERE word ~ '^[s](.*)[a]$';
+
+-- 2nd way:
+SELECT *
+FROM words
+WHERE word ~ 's(.*)[a]$';
+
+-- 3rd way:
+SELECT *
+FROM words
+WHERE word ~ 's(.*)a$';
+
+-- 4th way:
+SELECT *
+FROM words
+WHERE word ~ 's(.*)a';
+
+-- ^ carrot sign, $ sign and [] become optional when we are searching for single character in our query
+
+
+
+-- Find words which start with 't' or 's' and end with 'a' or 'o'
+SELECT *
+FROM words
+WHERE word ~ '^[ts].*[ao]$';
+
+-- ^ carrot sign, $ sign and [] become COMPULSORY when we are searching for multiple characters in our query
+
+SELECT * FROM words;
+
+-------------- HOMEWORK ----------------
+-- 1.	Find names which does not start with 'E' and does not end with 'y' from company_employees table.
+-- 2.	Find names whose first character is not 'J', 'B' or 'E' and last character is not 'r' or 't' from company_employees table.
+-- 3.	Find names which start with chars from 'A' to 'F' and third character is 'a' from company_employees table.
+
+SELECT * FROM company_employees;
+
+-- For further practice =>  https://regexr.com/
+
+------------- HW SOLUTION -----------------
+
+-- 1.	Find names which does not start with 'E' and does not end with 'y' from company_employees table.
+SELECT *
+FROM company_employees
+WHERE name ~ '^[^E](.*)[^y]$';
+
+-- 2.	Find names whose first character is not 'J', 'B' or 'E' and last character is not 'r' or 't' from company_employees table.
+SELECT *
+FROM company_employees
+WHERE name ~ '^[^JBE](.*)[^rt]$';
+-- 3.	Find names which start with chars from 'A' to 'F' and third character is 'a' from company_employees table.
+SELECT *
+FROM company_employees
+WHERE name~'^[A-F].a(.*)';
+
+-- OR
+SELECT *
+FROM company_employees
+WHERE name ~ '^[A-F].[a]';
+
+
+--------------- CONCATENATION in SQL ---------------
+-- To display multiple columns as a single column, we use ||' '|| sign and concatenate (join the data together)
+
+CREATE TABLE employees1 (
+  employee_id numeric(9),
+  employee_first_name VARCHAR(20),
+  employee_last_name VARCHAR(20)
+);
+
+
+INSERT INTO employees1 VALUES(14, 'Chris', 'Tae');
+INSERT INTO employees1 VALUES(11, 'John', 'Walker');
+INSERT INTO employees1 VALUES(12, 'Amy', 'Star');
+INSERT INTO employees1 VALUES(13, 'Brad', 'Pitt');
+INSERT INTO employees1 VALUES(15, 'Chris', 'Way');
+
+SELECT * FROM employees1;
+
+
+-- Merge first name and last name as full name
+SELECT employee_first_name ||' '|| employee_last_name AS full_name
+FROM employees1;
+
+-- Merge id, first name and last name as full info
+
+SELECT employee_id ||' - '|| employee_first_name ||' '|| employee_last_name AS full_info
+FROM employees1;
+
+-------------------- GROUP BY CLAUSE --------------
+-- It is used for grouping the data together in one field
+-- It's mostly used with AGRREGATE FUNCTIONS
+--
+
+CREATE TABLE shopping_list (
+    item_id SERIAL PRIMARY KEY,
+    category VARCHAR(50),
+    item_name VARCHAR(50),
+    price DECIMAL(8, 2)
+);
+
+
+INSERT INTO shopping_list (category, item_name, price)
+VALUES
+    ('Fruits', 'Apple', 1.50),
+    ('Vegetables', 'Tomato', 1.00),
+    ('Dairy', 'Milk', 2.25),
+    ('Bakery', 'Muffin', 1.50),
+    ('Meat', 'Chicken', 5.50),
+    ('Vegetables', 'Carrot', 0.75),
+    ('Meat', 'Mutton', 6.80),
+    ('Dairy', 'Cheese', 3.75),
+    ('Fruits', 'Banana', 0.99),
+    ('Bakery', 'Croissant', 2.00),
+    ('Bakery', 'Baguette', 2.20),
+    ('Meat', 'Salmon', 9.99),
+    ('Fruits', 'Grapes', 2.50),
+    ('Vegetables', 'Broccoli', 1.25),
+    ('Dairy', 'Butter', 2.50),
+    ('Dairy', 'Yogurt', 1.99),
+    ('Vegetables', 'Spinach', 1.80),
+    ('Fruits', 'Orange', 1.25),
+    ('Bakery', 'Bread', 1.80),
+    ('Meat', 'Beef', 7.20);
+
+
+
+-- Find how much is the total price for each category
+SELECT category, SUM(price) AS total_price_per_category
+FROM shopping_list
+GROUP BY (category);
+
+-- Find average price for each category
+SELECT category, ROUND (AVG(price) , 3)  AS average_price_per_category
+FROM shopping_list
+GROUP BY (category);
+
+-- Find min, max price and total number of items for each category
+
+
+SELECT category,
+MIN(price) AS Min_Price,
+MAX(price) AS Max_Price,
+COUNT(item_id)  AS total_num_items
+FROM shopping_list
+GROUP BY (category);
+
+SELECT * FROM shopping_list;
+
+----------------------------
+
+SELECT * FROM company_employees;
+
+-- Find total salary for each employee from company_employees
+SELECT name, SUM(salary) AS total_salary
+FROM company_employees
+GROUP BY (name);
+
+-- Find number of employees per state in descending order (according to number of employees)
+
+SELECT state, COUNT(id) AS total_num_of_employees
+FROM company_employees
+GROUP BY (state)
+ORDER BY COUNT(id) DESC;
+
+
+-- OR we can use the ALIAS as well in place of aggregate function
+
+SELECT state, COUNT(id) AS total_num_of_employees
+FROM company_employees
+GROUP BY (state)
+ORDER BY total_num_of_employees DESC;
