@@ -198,7 +198,7 @@ FROM new_students;
 -- DELETE ALL records from new_students;
 TRUNCATE TABLE new_students;
 
--- To remove table COMPLETETLY from the database
+-- To remove table COMPLETELY from the database
 DROP TABLE new_students;
 
 

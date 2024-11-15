@@ -17,9 +17,12 @@ DROP TABLE students;  -- DDL => is used to create structure
 
 -- How to add data in a table
 
+
+
 INSERT INTO students VALUES ('01', 'Tom Hanks', 45, '2024-09-12');
 INSERT INTO students VALUES ('02', 'John Doe', 37, '2024-02-24');
 INSERT INTO students VALUES ('03', 'Emma Watson', 27, '2024-02-29');
+
 
 -- How to add data into specific fields
 
@@ -43,6 +46,15 @@ CREATE TABLE employees (
 );
 
 -- Add data into this table
+
+-- INSERT INTO employees VALUES(id, name, age, email, salary);  -- SYNTAX
+
+-- INSERT INTO employees VALUES(12, 'Tom Hanks', 22, 'th@yahoo.com', 50000);
+
+/*
+We should not add id values because it causes conflict in the database because of
+SERIAL data type that we used in id column.
+*/
 
 -- INSERT INTO employees VALUES ( ,'', ,'', );
 /* Normal syntax that we follow when we try to add all values in a table => follow the
@@ -68,7 +80,7 @@ SELECT * FROM employees;
 
 DROP TABLE employees;
 
--- Add PRIMARY KEY Constarint
+-- Add PRIMARY KEY Constraint
 
 -- 1st way of creating PRIMARY KEY
 -- add the keyword PRIMARY KEY next to the column name after data type
@@ -82,10 +94,12 @@ CREATE TABLE books (
 
 SELECT * FROM books;
 
+-- HOMEWORK: Add at least 3 data to this table
+
 DROP TABLE books;
 
 -- 2nd way of adding Primary Key
-CREATE TABLE books1 (
+CREATE TABLE children_books (
 	book_id SERIAL,
 	book_name VARCHAR (30) NOT NULL,
 	publisher_name VARCHAR (30),
@@ -93,11 +107,11 @@ CREATE TABLE books1 (
 	CONSTRAINT id_pk PRIMARY KEY (book_id)
 );
 
-SELECT * FROM books1;
+SELECT * FROM children_books;
 
 -- How to create COMPOSITE PRIMARY KEY
 
-CREATE TABLE books2 (
+CREATE TABLE adventure_books (
 	book_id SERIAL,
 	book_name VARCHAR (30) NOT NULL,
 	publisher_name VARCHAR (30),
@@ -105,7 +119,7 @@ CREATE TABLE books2 (
 	CONSTRAINT composite_pk PRIMARY KEY (book_id, book_name)
 );
 
-SELECT * FROM books2;
+SELECT * FROM adventure_books;
 
 
 -- How to add FOREIGN KEY
@@ -118,6 +132,97 @@ CREATE TABLE authors (
 
 SELECT * FROM authors;
 
+
+-- Let's add values to books table
+-- 1st way:
+
+INSERT INTO books(book_name, publisher_name, page_number) VALUES('Anna Karenina', 'Penguin Classics Deluxe Edition', 864);
+INSERT INTO books(book_name, publisher_name, page_number) VALUES('The Painted Veil', 'Vintage Classics', 246);
+
+INSERT INTO books (book_name, publisher_name, page_number) VALUES ('Madonna in a Fur Coat', 'Penguin Classics', 177);
+INSERT INTO books (book_name, publisher_name, page_number) VALUES ('Piraye', 'Dogan book', 408);
+INSERT INTO books(book_name, publisher_name, page_number) VALUES ('The Power Of Now', 'New World Library', 236);
+INSERT INTO books(book_name, publisher_name, page_number) VALUES ('Set Boundaries, Find Peace', 'Penguin Publishing Group', 304);
+INSERT INTO books(book_name, publisher_name, page_number) VALUES ('The Great Gatsby', 'Wordsworth Editions', 144);
+INSERT INTO books(book_name, publisher_name, page_number) VALUES ('Frankenstein', 'Wordsworth Editions', 208);
+
+-- we can also use DEFAULT if our id column has SERIAL data type
+
+INSERT INTO books VALUES (DEFAULT, 'The Art of Programming', 'Pearson', 500);
+INSERT INTO books VALUES (DEFAULT, 'Effective Java', 'Addison-Wesley', 400);
+
+
+-- Let's add values to authors table
+-- 1st way:
+INSERT INTO authors (author_name , books_published) VALUES ('F. Scott Fitzgerald
+', 4);
+INSERT INTO authors (author_name , books_published) VALUES ('Charles Dickens', 15);
+
+INSERT INTO authors (author_name , books_published) VALUES (' Robert Louis Stevenson
+', 13);
+
+-- 2nd way:
+
+INSERT INTO authors VALUES (DEFAULT, 'John Smith', 5);
+INSERT INTO authors VALUES (DEFAULT, 'Alice Johnson', 2);
+INSERT INTO authors VALUES (DEFAULT, 'David Brown', 1);
+INSERT INTO authors VALUES (DEFAULT, 'Emily White', 4);
+INSERT INTO authors VALUES (DEFAULT, 'Michael Green', 5);
+
+
+
+SELECT * FROM books;
+
+
+SELECT * FROM authors;
+
+
+SELECT * FROM books, authors; -- This type SELECT query results in CROSS JOIN which is not the correct way of data retrieval. It combines 1st row of table 1 with all rows of table 2, 2nd row of table 1 with all rows of table 2 and so on.
+
+
+-- Creating a foreign key between tables serves a purpose beyond enabling data retrieval—it enforces referential integrity and helps maintain data consistency within the database.
+-- Foreign keys provide data integrity, enforce logical relationships, and prevent invalid data, making the database more reliable. While they don't directly influence how data is read, they are essential in maintaining a consistent and trustworthy data structure, which is fundamental to relational databases.
+
+
+
+SELECT * FROM students, primary_students;
+
+SELECT * FROM students;
+
+SELECT * FROM primary_students;
+
+
+/*
+SELECT * FROM books, authors without any JOIN or subquery will produce a Cartesian product (also known as a cross join). This means it will return every possible combination of rows between the two tables, which is what we don't want.
+
+Creating a foreign key between tables serves a purpose beyond enabling data retrieval—it enforces referential integrity and helps maintain data consistency within the database.
+
+Foreign keys provide data integrity, enforce logical relationships, and prevent invalid data, making the database more reliable. While they don't directly influence how data is read, they are essential in maintaining a consistent and trustworthy data structure, which is fundamental to relational databases.
+
+
+1. Ensures Referential Integrity
+A foreign key constraint makes sure that the value in one table (like author_id in an authors table) exists as a primary key in another table (like book_id in a books table).
+For example, if an author references a book_id, a foreign key constraint ensures that this book_id actually exists in the books table. This prevents "orphan" records, where a reference is made to a non-existent entry.
+2. Prevents Data Anomalies
+Foreign keys prevent several types of data anomalies, including:
+
+Insertion Anomalies: A foreign key constraint prevents adding records that refer to non-existent rows in a related table. For instance, you can't insert an author with a book_id that isn't in the books table.
+Update Anomalies: If a primary key value in the parent table (books) changes, the foreign key constraint can enforce cascade updates, automatically updating all references to the new value, maintaining data consistency.
+Deletion Anomalies: With foreign keys, you can set up cascading deletes to ensure that when a record in the parent table (books) is deleted, all related records in the child table (authors) are automatically removed.
+3. Supports Data Relationships and Logical Structure
+Foreign keys make it clear how tables are logically related. This is crucial for designing databases with a clear schema that accurately represents the relationships in your data model (e.g., one author can write multiple books). This structure also makes it easier to understand the database design, write queries, and develop applications that rely on these relationships.
+
+4. Improves Query Performance with Indexes
+Foreign keys often result in the automatic creation of indexes, which can improve the performance of join operations on large tables. When you join tables on foreign key relationships, the database can use these indexes to retrieve related rows more efficiently.
+
+5. Enhances Data Integrity Across Applications
+When multiple applications or users interact with the database, a foreign key constraint ensures they can't accidentally insert inconsistent data. It acts as a safeguard, ensuring all data entry operations respect the established relationships between tables.
+
+Summary:
+
+Foreign keys provide data integrity, enforce logical relationships, and prevent invalid data, making the database more reliable. While they don't directly influence how data is read, they are essential in maintaining a consistent and trustworthy data structure, which is fundamental to relational databases.
+
+*/
 
 
 
