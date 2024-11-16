@@ -1,0 +1,159 @@
+CREATE TABLE students(
+	id CHAR (5),
+	name VARCHAR(30),
+	age INT,
+	register_date DATE
+);
+
+INSERT INTO students VALUES('101', 'John Doe', 19, '2024-11-14');
+INSERT INTO students VALUES('102', 'Emma Watson', 22, '2024-11-10');
+INSERT INTO students VALUES('103', 'Tom Hanks', 23, '2024-11-11');
+INSERT INTO students VALUES('104', 'Keira Knightly', 21, '2024-11-09');
+
+
+INSERT INTO students (id , name) VALUES('107', 'Ali Can');
+INSERT INTO students (name, register_date) VALUES ('Ayse Gul', '2024-11-01');
+INSERT INTO students (name, register_date) VALUES ('Maryam Gul', '2024-11-01');
+
+CREATE TABLE employees(
+
+	id SERIAL,
+	name VARCHAR (30),
+	age INT CHECK(age >= 18),
+	email VARCHAR (30) UNIQUE,
+	salary REAL
+);
+
+
+INSERT INTO employees(name, age, email, salary) VALUES('John Doe', 24, 'jd@gmail.com' , 55000);
+INSERT INTO employees(age, email, salary) VALUES (22, 'abc@yahoo.com', 60000);
+INSERT INTO employees(name, email, salary) VALUES ('Ali Can', 'ali_can@gmail.com', 65000);
+INSERT INTO employees(name, age, email) VALUES ('Veli Can', 10, 'veli_can@gmail.com');
+INSERT INTO employees(name, age, email) VALUES ('Maryam', 22, 'abc@yahoo.com');
+INSERT INTO employees(name, age, email) VALUES ('Angelina Jolie', 60 , 'aj@hotmail.com');
+INSERT INTO employees(name, age, email) VALUES ('Veli Can', 20, 'veli_can@gmail.com');
+INSERT INTO employees(name, age, email, salary) VALUES  ('Keira Knightly', 26, 'kk@gmail.com', 70000);
+INSERT INTO employees(id, name, age, email, salary) VALUES (5, 'Natalia Tarakci', 20, 'nt@gmail.com', 75000); -
+
+CREATE TABLE books(
+
+	book_id SERIAL PRIMARY KEY,
+	book_name VARCHAR (40) NOT NULL,
+	publisher_name VARCHAR (40),
+	page_number INT
+
+);
+
+INSERT INTO books(book_name, publisher_name, page_number) VALUES('Anna Karenina', 'Penguin Classics Deluxe Edition', 864);
+INSERT INTO books(book_name, publisher_name, page_number) VALUES('The Painted Veil', 'Vintage Classics', 246);
+
+INSERT INTO books (book_name, publisher_name, page_number) VALUES ('Madonna in a Fur Coat', 'Penguin Classics', 177);
+INSERT INTO books (book_name, publisher_name, page_number) VALUES ('Piraye', 'Dogan book', 408);
+INSERT INTO books(book_name, publisher_name, page_number) VALUES ('The Power Of Now', 'New World Library', 236);
+INSERT INTO books(book_name, publisher_name, page_number) VALUES ('Set Boundaries, Find Peace', 'Penguin Publishing Group', 304);
+INSERT INTO books(book_name, publisher_name, page_number) VALUES ('The Great Gatsby', 'Wordsworth Editions', 144);
+INSERT INTO books(book_name, publisher_name, page_number) VALUES ('Frankenstein', 'Wordsworth Editions', 208);
+
+-- we can also use DEFAULT if our id column has SERIAL data type
+
+INSERT INTO books VALUES (DEFAULT, 'The Art of Programming', 'Pearson', 500);
+INSERT INTO books VALUES (DEFAULT, 'Effective Java', 'Addison-Wesley', 400);
+
+
+CREATE TABLE authors (
+	author_id SERIAL,
+	author_name VARCHAR (30) NOT NULL,
+	books_published INT,
+
+	CONSTRAINT foreign_key FOREIGN KEY(author_id) REFERENCES books(book_id)
+);
+
+INSERT INTO authors (author_name , books_published) VALUES ('F. Scott Fitzgerald', 4);
+INSERT INTO authors (author_name , books_published) VALUES ('Charles Dickens', 15);
+
+INSERT INTO authors (author_name , books_published) VALUES (' Robert Louis Stevenson', 13);
+
+-- 2nd way:
+
+INSERT INTO authors VALUES (DEFAULT, 'John Smith', 5);
+INSERT INTO authors VALUES (DEFAULT, 'Alice Johnson', 2);
+INSERT INTO authors VALUES (DEFAULT, 'David Brown', 1);
+INSERT INTO authors VALUES (DEFAULT, 'Emily White', 4);
+INSERT INTO authors VALUES (DEFAULT, 'Michael Green', 5);
+
+
+CREATE TABLE new_employees( -- DDL Query
+
+	id CHAR(5) PRIMARY KEY,
+	name VARCHAR(30) UNIQUE,
+	salary INT NOT NULL,
+	start_date DATE
+);
+
+
+INSERT INTO new_employees VALUES ('1002', 'Donatello', 12000, '2018-04-14');
+
+
+INSERT INTO new_employees VALUES ('1003', null, 5000, '2018-04-14');
+INSERT INTO new_employees VALUES ('1004', 'Donatello', 5000, '2020-04-14');
+INSERT INTO new_employees VALUES ('1005', 'Michael Angelo', 11000, '2018-04-14');
+INSERT INTO new_employees VALUES ('1006', 'Leonardo', null, '2019-03-24');
+INSERT INTO new_employees VALUES ('1007', 'Raphael', '', '2022-11-23');
+INSERT INTO new_employees VALUES ('', 'April', 8000, '2022-04-14');
+INSERT INTO new_employees VALUES ('', 'Miss April', 10000, '2023-06-19');
+INSERT INTO new_employees VALUES ('1002', 'Splinter', 12000, '2024-03-14');
+INSERT INTO new_employees VALUES (null, 'Fred', 14000, '2022-05-16');
+INSERT INTO new_employees VALUES ('1008', 'Barnie', 10000, '2023-11-26');
+INSERT INTO new_employees VALUES ('1009', 'Wilma', 11000, '2023-11-30');
+INSERT INTO new_employees VALUES ('1010', 'Betty', 13000, '2023-09-24');
+
+
+CREATE TABLE addresses(
+	address_id CHAR (5),
+	dist VARCHAR (30),
+	street VARCHAR (20),
+	city VARCHAR (20),
+
+	CONSTRAINT add_fk FOREIGN KEY (address_id) REFERENCES new_employees (id)
+);
+
+
+
+
+INSERT INTO addresses VALUES ('1003', 'Ninja Dist', '40.Cad.', 'Washington');
+INSERT INTO addresses VALUES ('1004', 'Samurai Dist', '12.Kat St.', 'Tokyo'); -- will not be added because there's no reference to this id
+INSERT INTO addresses VALUES ('1005', 'Viking Village', 'Hammer Rd.', 'Oslo');
+INSERT INTO addresses VALUES ('1006', 'Pirate Cove', 'Blackbeard Ln.', 'Kingston'); -- will not be added because there's no reference to this id
+INSERT INTO addresses VALUES ('1007', 'Knight’s Alley', 'Shield St.', 'London');
+
+INSERT INTO addresses VALUES (Null, 'Tas Sok', '23.Cad.', 'Bursa');
+INSERT INTO addresses VALUES (Null, 'Ninja Dist', '40.Cad.', 'Florida');
+INSERT INTO addresses VALUES ('1008', 'Wizard’s Quarter', 'Magic Ave.', 'Edinburgh');
+INSERT INTO addresses VALUES ('1009', 'Gladiator’s Arena', 'Colosseum Blvd.', 'Rome');
+INSERT INTO addresses VALUES ('1010', 'Sherlock Lane', '221B Baker St.', 'London');
+
+INSERT INTO addresses VALUES ('1011', 'Dragon’s Den', 'Firebreath Rd.', 'Beijing');
+INSERT INTO addresses VALUES ('1012', 'Ranger’s Trail', 'Forest Path', 'Toronto');
+
+
+CREATE TABLE new_students(
+	id SERIAL PRIMARY KEY,
+	first_name VARCHAR (30),
+	last_name VARCHAR (30),
+	exam_score INT
+);
+
+
+-- 3rd way of adding data / values
+
+INSERT INTO new_students (first_name, last_name, exam_score) VALUES
+	('Tom', 'Hanks', 85),
+	('Keira', 'Knightly', 92),
+	('Lenardo', 'Dicaprio', 78),
+	('Julia', 'Roberts', 88),
+	('Denzel', 'Washington', 95),
+	('Benedict', 'Cumberbatch', 88),
+	('Brad', 'Pitt', 91),
+	('Russel', 'Crowe', 89),
+	('Emma', 'Watson', 87),
+	('Judy', 'Dench', 97);

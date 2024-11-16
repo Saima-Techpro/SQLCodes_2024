@@ -1,4 +1,10 @@
------------ Day 04 ----------
+----------- Day 04 -----------
+
+-- Drop the primary_students table if it exists already
+
+DROP TABLE primary_students;
+
+
 
 CREATE TABLE primary_students(
 	student_id CHAR (5) PRIMARY KEY,
@@ -12,83 +18,157 @@ CREATE TABLE primary_students(
 INSERT INTO primary_students VALUES ('1111', 'Ryan Brooks', 'rb@gmail.com', 11, '1234567890');
 INSERT INTO primary_students VALUES ('1112', 'Emma Williams', 'ew@gmail.com', 12, '2345678901');
 INSERT INTO primary_students VALUES ('1114', 'Alice Baker', 'ab@gmail.com', 10, '3456789012');
-
--- INSERT INTO primary_students VALUES ('113', 'Tom Hanks', null, 123, '1234567890');  This query has 3 errorr in it
-
-INSERT INTO primary_students VALUES ('113', 'Tom Hanks', 'th@gmail.com', 15, '4567890123');
+-- INSERT INTO primary_students VALUES ('113', 'Tom Hanks', null, 123, '1234567890'); -- There are 3 errors in this data => email can't be null, student_age can't have 3 digits, phone_number should be UNIQUE,
 
 
--- How to add data to specific fields
+INSERT INTO primary_students VALUES ('113', 'Tom Hanks', 'th@hotmail.com', 23, '6789012345');
+
+
+-- Add data to specific columns
 
 INSERT INTO primary_students (student_id, email_address, phone_number) VALUES ('1115', 'abc@outlook.com', '5678901234');
-INSERT INTO primary_students (student_id, email_address, phone_number) VALUES('1116', 'xyz@yahoo.com', '6789012345');
+INSERT INTO primary_students (student_id, email_address, phone_number) VALUES('1116', 'xyz@yahoo.com', '6701234589');
+
+
+-- Add multiple data to specific columns
 
 INSERT INTO primary_students (student_id, email_address, phone_number) VALUES
  				('1117', 'bc@gmail.com', '6778901234') ,
 				('1118', 'pq@yahoo.com', '8889012345');
 
 
--- To see the table
 SELECT * FROM primary_students;
 
------------------ UPDATE - SET ---------------
 
+
+----------- UPDATE - SET --------------
 -- Update student_id 113 to 1113
 UPDATE primary_students
-SET student_id = '1113'
+SET student_id = '1113'  -- new value
+-- WHERE student_name = 'Tom Hanks'; OR
 WHERE student_id = '113';
 
--- Update student_name to 'Anthony Quinn' where studnet_id is '1115'
 
+
+-- Update the name to Keira Knightly where id is 1115 -- will this work?
 UPDATE primary_students
-SET student_name = 'Anthony Quinn'
+SET student_name = 'Keira Knightly'
 WHERE student_id = '1115';
 
--- Change 'Tom Hanks' name to 'John Doe'
+
+-- Change 'Alice Baker' name to ....?
+
 UPDATE primary_students
-SET student_name= 'John Doe'
-WHERE student_name='Tom Hanks';
+SET student_name = 'Morgan Freeman'
+WHERE student_name = 'Alice Baker';
 
+-- Change bc@gmail.com email to null
 
--- Change email  'bc@gmail.com' to null
 UPDATE primary_students
-SET email_address= null
-WHERE email_address = 'bc@gmail.com' ;  --  email_address can NOT be NULL
+SET email_address = NULL
+WHERE email_address = 'bc@gmail.com'; -- email can NOT be null => email_address has NOT NULL constraint
 
-
--- Change email  'bc@gmail.com' to 'bcd@yahoo.com'
 UPDATE primary_students
-SET email_address = 'bcd@yahoo.com'
+SET email_address = 'pqr@gmail.com'
 WHERE email_address = 'bc@gmail.com';
 
 SELECT * FROM primary_students;
 
-
- ---------------- AGGREGATE FUNCTIONS ------------------
- --- In PostgreSQL, we have 5 aggregate functions => MIN, MAX, SUM, COUNT, AVG
+DROP TABLE primary_students;
 
 
--- Find out the minimum age from primary_students table.
-SELECT MIN(student_age) FROM primary_students;
+--------------------------------------------------------------------
+CREATE TABLE restaurants (
+    restaurant_id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL UNIQUE,
+    location VARCHAR NOT NULL,
+    rating DECIMAL(2, 1) CHECK (rating >= 1 AND rating <= 5)
+);
 
--- Find out the maximum age from primary_students table.
+SELECT * FROM restaurants;
 
-SELECT MAX(student_age) FROM primary_students;
+INSERT INTO restaurants VALUES(DEFAULT, 'Istanbul', '2 Bury Old Road, Manchester, M8 9JN', 4.8);
+
+INSERT INTO restaurants VALUES (DEFAULT, 'Hard Rock Cafe', 'London', 4.5);
+INSERT INTO restaurants VALUES (DEFAULT, 'Bukhara', 'Kabul', 5.0 );
+
+INSERT INTO restaurants(name , location, rating) VALUES('Miu Shushi', 'Calle de leon', 5  );
+INSERT INTO restaurants (name,location,rating) VALUES ('VEGGIE' , 'Munich',  4);
+
+INSERT INTO restaurants (name,location) VALUES ('SunShine' , 'DownTown');
+INSERT INTO restaurants (name,location) VALUES ('Eatly' , 'Dubai Mall');
 
 
--- Update all students' age to the maximum age
 
-UPDATE primary_students
-SET student_age = 15; -- HARD CODED
+INSERT INTO restaurants  (name, location, rating) VALUES
+		('GlobeFish Restaurant','Calgary',5.0),
+		('Fushion Sushi','Toronto',4.9),
+		('The Gourmet Kitchen', 'New York, NY', 4.5),
+		('Spicy Delights', 'Los Angeles, CA', 4.2),
+		('Seafood Paradise', 'Miami, FL', 4.7);
 
--- Dynamic way
-UPDATE primary_students
-SET student_age = (SELECT MAX(student_age) FROM primary_students);
+
+-- Update the rating of VEGGIE to 4.5
+
+UPDATE restaurants
+SET rating = 4.5
+WHERE name = 'VEGGIE';
+
+-- Update the name and rating of a restaurant with id 8
+
+UPDATE restaurants
+SET name = 'Gourmet', rating = 4.8
+WHERE restaurant_id = 8;
+
+-- Decrease the ratings of all restaurants by 0.5
+-- SELECT rating FROM restaurants => returns all values from rating column
+
+UPDATE restaurants
+SET rating = rating - 0.5;
+
+
+-- If a restaurant has null value, set it to 4.9
+
+
+UPDATE restaurants
+SET rating = 4.9
+WHERE rating IS NULL;
+
+
+SELECT * FROM restaurants;
+
+
+
+
+---------------- AGGREGATE FUNCTIONS --------------
+-- In SQL, we have 5 Aggregate functions: MIN, MAX, AVG, COUNT, SUM
 
 SELECT * FROM primary_students;
 
 
+-- Find out the minimum age from primary_students table
+SELECT MIN(student_age)
+FROM primary_students;
 
+-- Find out the maximum age from primary_students table
+
+SELECT MAX(student_age)
+FROM primary_students;
+
+
+-- UPDATE all students' age equal to the maximum age
+UPDATE primary_students
+SET student_age = 23;  -- HARD CODED
+
+-- dynamic way:
+
+UPDATE primary_students
+SET student_age = (SELECT MAX(student_age) -- this is sub-query => sub-query ALWAYS runs first
+FROM primary_students);
+
+
+
+-------------------------------------------------
 CREATE TABLE parents (
 	parent_id CHAR (5) PRIMARY KEY,
 	parent_name TEXT,
@@ -104,38 +184,36 @@ INSERT INTO parents VALUES('2114', 'John Baker', '1114', 'London, UK', '1980-07-
 INSERT INTO parents VALUES('2115', 'Lydia Smith', '1115', 'Toront, Canada', '1986-09-24');
 INSERT INTO parents VALUES('2116', 'Dogan Can', '1116', 'Istanbul, Turkiye', '1990-11-11');
 
-
 SELECT * FROM parents;
+
 
 -- Who is the oldest in parents table?
 
-SELECT MIN(parent_dob) FROM parents;
- -- To find the name of the oldest parent
- SELECT *
- FROM parents
- WHERE parent_dob = (SELECT MIN(parent_dob) FROM parents);
+SELECT MIN(parent_dob) FROM parents; -- returns the minimum birthday/year
 
- SELECT parent_name
- FROM parents
- WHERE parent_dob = (SELECT MIN(parent_dob) FROM parents);
+SELECT *
+FROM parents
+WHERE parent_dob = '1976-12-05';  -- HARD CODED => this returns the whole record of the parent
 
--- Who is the youngest in parents table?
 
-SELECT MAX(parent_dob) FROM parents;
+SELECT *
+FROM parents
+WHERE parent_dob = (SELECT MIN(parent_dob) FROM parents);
 
- -- To find the name of the oldest parent
+
+-- to get the name of the parent only
 SELECT parent_name
 FROM parents
-WHERE parent_dob = (SELECT MAX(parent_dob) FROM parents);
+WHERE parent_dob = (SELECT MIN(parent_dob) FROM parents);
 
 
--- Change all date of births to Highest date of birth
-UPDATE parents
-SET parent_dob =(SELECT MIN(parent_dob) From parents);
+-- Who is the youngest in parents table?
+SELECT parent_name
+FROM parents
+WHERE parent_dob = (SELECT MAX(parent_dob) FROM parents); -- 1994-10-23
 
-SELECT * FROM parents;
 
-
+-----------------------------------------------------------
 CREATE TABLE workers(
   worker_id SMALLINT,
   worker_name VARCHAR(30),
@@ -157,97 +235,122 @@ INSERT INTO workers VALUES(109, 'Fatih Tamer', 18000);
 INSERT INTO workers VALUES(110, 'Emel Ebru', 8000);
 
 
-
-SELECT * FROM workers;
+-- Find the minimum salary
+SELECT MIN(worker_salary) FROM workers;
 
 -- Find the maximum salary
 SELECT MAX(worker_salary) FROM workers;
 
 
--- Find the minimum salary
-SELECT MIN(worker_salary) FROM workers;
+--------------- ALIAS --------------
+
+-- ALIAS is the temporary name that we give to the column that is showing the result
+
+-- System.out.Println ("Total salary : " +result )
 
 
--------- ALIAS --------
--- We use AS (alias) to give a temporary name to the field that contains result
--- Like System.out.println("Total salary: "+counter); in JAVA
+-- Count the number of workers in the table
 
-SELECT MIN(worker_salary) AS minimum_salary FROM workers;
-
--- Find the total number of workers (use ALIAS)
-
-SELECT COUNT(worker_id) AS total_numb_of_workers FROM workers;
-
--- Find the total salary (use ALIAS)
-SELECT SUM(worker_salary) AS total_salary FROM workers;
-
--- Find the average salary (use ALIAS)
-SELECT AVG(worker_salary) AS average_salary FROM workers;
+SELECT COUNT(worker_id) AS number_of_workers
+FROM workers;
 
 
-------------- Combining AGGREGATE FUNCTION and UPDATE-SET ------------
+-- Get the average salary from the workers table
+SELECT AVG(worker_salary) AS average_salary
+FROM workers;
+
+-- Get the total salary paid to the workers from the workers table
+SELECT SUM(worker_salary) AS Total_Salary
+FROM workers;
+
+
+----------------- Combining UPDATE-SET and AGGREGATE FUNCTIONS --------------------
 
 -- Increase Veli's salary to 20% less than the highest salary
 
--- 1. Find the highest salary
-SELECT MAX(worker_salary) FROM workers;  -- 19000
+-- 1. Find out the highest salary in the table
+SELECT MAX(worker_salary) FROM workers;
 
 -- 2. Calculate 20% less than the highest salary
-SELECT MAX(worker_salary)* 0.8 FROM workers; -- 15200
+SELECT MAX(worker_salary) * 0.8 FROM workers;  -- 15200
 
--- 3. Now increase Veli's salary
--- Hard coding
-UPDATE workers
-SET worker_salary = 15200
-WHERE worker_id = 102;
-
-
--- Dynamic way
-UPDATE workers
-SET worker_salary = (SELECT MAX(worker_salary)* 0.8 FROM workers)
-WHERE worker_id = 102; -- OR WHERE worker_name = 'Veli Can';
-
-
--- Decrease Ali's salary to 30% more than the lowest salary
--- Dynamic way
-UPDATE workers
-SET worker_salary = (SELECT MIN(worker_salary)*1.3 FROM workers)
-WHERE worker_id = 101;
-
-
--- Increase the salaries by 1000 (bonus) if the salaries are less than average salary
+-- 3. Update Veli's salary equal to that amount
 
 UPDATE workers
-SET worker_salary =  worker_salary + 1000
+SET worker_salary = 15200 -- HARD CODED
+WHERE worker_name = 'Veli Han';
+
+-- Dynamic way:
+UPDATE workers
+SET worker_salary = (SELECT MAX(worker_salary) * 0.8 FROM workers)
+WHERE worker_name = 'Veli Han';
+
+
+-- Decrease Hasan's salary to 30% more than the lowest salary
+
+-- Find the lowest salary
+SELECT MIN(worker_salary) FROM workers;  -- 7000
+
+-- Calculate 30% more than the lowest salary
+SELECT MIN(worker_salary) * 1.3 FROM workers;  -- 9100
+
+-- Update Hasan's salary to that amount
+
+
+UPDATE workers
+SET worker_salary = (SELECT MIN(worker_salary) * 1.3 FROM workers)
+WHERE worker_name = 'Hasan Basri';
+
+
+-- Update all salaries with a bonus amount equal to 1000
+
+UPDATE workers
+SET worker_salary = worker_salary + 1000 ;
+
+
+-- Increase the salaries by 1000 if the salary is lower than the average salary
+
+-- 1. Find the average salary
+
+SELECT AVG(worker_salary) FROM workers; -- 13030.0000
+
+
+SELECT * FROM workers WHERE worker_salary < 13030; -- retruns the records of the workers who are earning less than the average salary
+
+UPDATE workers
+SET worker_salary = worker_salary + 1000
 WHERE worker_salary < (SELECT AVG(worker_salary) FROM workers);
 
 
--- Make the salaries equal to average salary if the salaries are less than average salary
+-- Make the salaries equal to average salary if the salary is lower than the average salary
 
 UPDATE workers
 SET worker_salary = (SELECT AVG(worker_salary) FROM workers)
 WHERE worker_salary < (SELECT AVG(worker_salary) FROM workers);
 
 
+------------------ INTERVIEW QUESTION  ----------------
 
------------------ INTERVIEW QUESTIONS ------------------
--- How to select a record whose salary is second highest
--- 1. Highest salary
+-- Find the record of the worker who is earning second highest salary
+
+-- Find the maximum salary
 SELECT MAX(worker_salary) FROM workers;
 
--- 2. Second highest
+-- Find the second highest
 SELECT MAX(worker_salary) AS second_highest_salary
 FROM workers
 WHERE worker_salary < (SELECT MAX(worker_salary) FROM workers);
 
--- How to select a record whose salary is second lowest
-SELECT MIN(worker_salary) AS second_lowest_salary
+
+-- To get the full record of the worker
+SELECT *
 FROM workers
-WHERE worker_salary > (SELECT MIN(worker_salary) FROM workers);
+WHERE worker_salary = (SELECT MAX(worker_salary) AS second_highest_salary
+FROM workers
+WHERE worker_salary < (SELECT MAX(worker_salary) FROM workers))
 
-
------- HW --------
--- How to get the 3rd HIGHEST salary
+-- HW
+-- Find the record of the worker who is earning THIRD highest salary
 
 SELECT MAX (worker_salary) AS third_highest_salary
 FROM workers
@@ -263,4 +366,16 @@ WHERE worker_salary >(SELECT MIN(worker_salary)
 					  FROM workers
 					  WHERE worker_salary >(SELECT MIN(worker_salary)FROM workers));
 
+
+
+
+
+
 SELECT * FROM workers;
+
+
+
+
+
+
+
