@@ -367,10 +367,6 @@ WHERE worker_salary >(SELECT MIN(worker_salary)
 					  WHERE worker_salary >(SELECT MIN(worker_salary)FROM workers));
 
 
-
-
-
-
 SELECT * FROM workers;
 
 

@@ -225,6 +225,133 @@ Foreign keys provide data integrity, enforce logical relationships, and prevent 
 */
 
 
+CREATE TABLE customers (
+    customer_id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL
+);
+
+CREATE TABLE orders (
+    order_id SERIAL PRIMARY KEY,
+    customer_id INTEGER REFERENCES customers(customer_id) ON DELETE CASCADE
+);
+
+
+-- Insert a customer and their order
+INSERT INTO customers (name) VALUES ('Alice');
+INSERT INTO customers (name) VALUES ('Emily');
+INSERT INTO customers (name) VALUES ('William');
+INSERT INTO customers (name) VALUES ('John');
+INSERT INTO customers (name) VALUES ('Henry');
+
+INSERT INTO orders (customer_id) VALUES (1);
+INSERT INTO orders (customer_id) VALUES (2);
+INSERT INTO orders (customer_id) VALUES (3);
+INSERT INTO orders (customer_id) VALUES (4);
+INSERT INTO orders (customer_id) VALUES (5);
+
+
+SELECT * FROM customers;
+
+DROP TABLE customers;
+SELECT * FROM orders;
+DROP TABLE orders;
+
+
+-- Delete the customer
+DELETE FROM customers WHERE customer_id = 1;
+
+-- The related row in orders is automatically deleted
+
+
+/*
+
+If a row in the customers table is deleted, all corresponding rows in the orders table will be deleted automatically.
+If the customer_id in the customers table is updated (with ON UPDATE CASCADE), the customer_id in the orders table will also update.
+*/
+
+
+-- When you use CASCADE with a DROP statement, it forces the removal of all dependent objects, such as tables, views, or indexes, that rely on the object being dropped.
+
+DROP TABLE customers CASCADE;
+
+
+-- The customers table and all objects depending on it (like the orders table) are also dropped automatically.
+-- Use with caution: CASCADE can lead to unintended data loss because it automatically removes all dependent objects or rows. Always verify dependencies before using it, especially in production databases.
+
+------------------ TRUNCATE - CASCADE --------------
+
+-- TRUNCATE TABLE table_name CASCADE;
+
+
+CREATE TABLE parent (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL
+);
+
+CREATE TABLE child (
+    id SERIAL PRIMARY KEY,
+    parent_id INTEGER REFERENCES parent(id)
+);
+
+
+INSERT INTO parent (name) VALUES ('Parent 1'), ('Parent 2'), ('Parent 3'), ('Parent 4');
+INSERT INTO child (parent_id) VALUES (1), (2), (3), (4) ;
+
+
+TRUNCATE TABLE parent CASCADE;
+
+
+-- All rows from the parent table are removed.
+-- The child table, which references parent, is also truncated automatically.
+
+-------------- NOTES ON CASCADE -----------
+
+-- Cascade is used to delete the parent table by force (without deleting the child table first) - schema is established through Foreign Key
+-- ON DELETE CASCADE => if any row from customers table is deleted, the corresponding row from orders table will automatically be deleted as well
+
+-- We can use CASCADE in queries as well
+
+
+CREATE TABLE customers (
+    customer_id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL
+);
+
+CREATE TABLE orders (
+    order_id SERIAL PRIMARY KEY,
+    customer_id INTEGER REFERENCES customers(customer_id) ON DELETE CASCADE
+);
+
+
+DROP TABLE customers CASCADE;  -- while dropping customers table, all child tables will be dropped as well
+
+
+
+
+
+
+
+/*
+Key Points to Remember:
+
+- Efficient for Clearing Data: Ideal for quickly resetting tables with dependencies.
+- No Rollback for Referenced Rows: Once executed, it’s not reversible unless you have a backup.
+- Foreign Key Constraints: Automatically propagates truncation to tables with foreign key
+	dependencies.
+- Usage in Production: Use carefully, as it removes all rows without logging individual deletions.
+*/
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

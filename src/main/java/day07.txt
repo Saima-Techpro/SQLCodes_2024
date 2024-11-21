@@ -1,6 +1,6 @@
---------------- Day 07 --------------
-------------NOT LIKE Operator with WILDCARDS -------------
+------------- Day 07 ----------------
 
+----------- NOT LIKE Operator with WILDCARDS ---------------
 CREATE TABLE words(
   word_id CHAR(10) UNIQUE,
   word VARCHAR(30) NOT NULL,
@@ -19,13 +19,15 @@ INSERT INTO words VALUES (1007, 'yusuf', 5);
 INSERT INTO words VALUES (1009, 'learn', 5);
 INSERT INTO words VALUES (1010, 'techpro', 7);
 
-
+SELECT * FROM words;
 
 -- Find words which do not end with 't' and 'f'
+
 
 SELECT *
 FROM words
 WHERE word NOT LIKE '%t' AND word NOT LIKE '%f';
+
 
 -- Find words which do not have 'a' and 'e' as second character
 
@@ -34,24 +36,33 @@ FROM words
 WHERE word NOT LIKE '_a%' AND word NOT LIKE '_e%';
 
 
--- Find words whose first character is 'h', second charcater can be any 'o', 'a' or 'i' and the last character must be 't'
+-- Find words whose first character is 'h', second character can be 'o', 'a', 'i' and last character must be 't'
+
 -- 1st way:
 SELECT *
 FROM words
 WHERE word LIKE 'ho%t' OR word LIKE 'ha%t' OR word LIKE 'hi%t';
 
 
--- 2nd Way: (RECOMMENDED)
-
+-- 2nd way: Using REGEXP_LIKE
 SELECT *
 FROM words
 WHERE REGEXP_LIKE (word, 'h[oai](.*)t');
 
+
+-- OR
+
+SELECT *
+FROM words
+WHERE word ~ 'h[oai](.*)t';
+
 /*
- ----------- NOTES about REGEX	(Regular Epxressions) with LIKE Operator -------------
+
+----------- NOTES about REGEX	(Regular Epxressions) with LIKE Operator ----------
 
 1. REGEXP_LIKE Operator: We use this operator for search operation
   Syntax:
+
   SELECT *
   FROM table_name
   WHERE REGEXP_LIKE (column_name, 'pattern that we are looking for in String Data')
@@ -60,6 +71,7 @@ WHERE REGEXP_LIKE (word, 'h[oai](.*)t');
 
 3. We can use REGEX operator with ~ sign
    Syntax:
+
   SELECT *
   FROM table_name
   WHERE column_name sign ~ 'pattern that we are looking for in String Data'
@@ -78,47 +90,49 @@ WHERE REGEXP_LIKE (word, 'h[oai](.*)t');
 	[a-f] => all character inside the square brackets (from a to f)
 
 
+
 */
 
--- OR with ~ sign (REGEXP_LIKE is replaced with ~ sign and the syntax is slightly changed as well)
+
+
+-- Find words whose first character is 'h', second character can be any character from 'a' to 'f' and last character must be 't'
+
+-- 1st syntax
+SELECT *
+FROM words
+WHERE REGEXP_LIKE (word, 'h[a-f](.*)t');
+
+
+--2nd syntax
 
 SELECT *
 FROM words
-WHERE word ~ 'h[aoi](.*)t';
+WHERE word ~ 'h[a-f](.*)t$'; -- $ means last character but it works even without it as well
 
-
--- Find words whose first character is 'h', second charcater can be any from 'a' to 'f' and the last character must be 't'
--- 1st way with REGEXP_LIKE
-SELECT *
-FROM words
-WHERE REGEXP_LIKE(word,'h[a-f](.*)t'); -- works even without $ sign for the last character
-
---2nd way: with ~ sign
-SELECT *
-FROM words
-WHERE word ~ 'h[a-f](.*)t$';
-
-
--- Find words whose first character is any 'a', 's', or 'y'
+-- Find words whose first charcater is an 'a', 's' or 'y';
 
 SELECT *
 FROM words
-WHERE word ~ '^[asy].*';
+WHERE word ~ '^[asy].*'; -- instead of (.*), we can also use .*
 
--- Find words whose first character is NOT 'a', 's', or 'y'
-SELECT *
-FROM words
-WHERE word ~ '^[^asy].*';
+-- Find words whose last charcater is an 'm', 'o' or 'a';
 
-
--- Find words whose last character is 'm', 'o'  or 'a'
 
 SELECT *
 FROM words
 WHERE word ~ '(.*)[moa]$';
 
--- Find words which start with 's' and end with 'a'
 
+
+-- Find words whose first charcater is NOT an 'a', 's' or 'y';
+
+
+SELECT *
+FROM words
+WHERE word ~ '^[^asy].*';
+
+
+-- Find words which start with 's' and ends with 'a'
 -- 1st way:
 SELECT *
 FROM words
@@ -127,20 +141,27 @@ WHERE word ~ '^[s](.*)[a]$';
 -- 2nd way:
 SELECT *
 FROM words
-WHERE word ~ 's(.*)[a]$';
+WHERE word ~ '^[s](.*)a$';
 
 -- 3rd way:
+
 SELECT *
 FROM words
-WHERE word ~ 's(.*)a$';
+WHERE word ~ '^[s].*a';
 
 -- 4th way:
+
 SELECT *
 FROM words
-WHERE word ~ 's(.*)a';
+WHERE word ~ '^s.*a';
 
--- ^ carrot sign, $ sign and [] become optional when we are searching for single character in our query
+-- 5th way:
+SELECT *
+FROM words
+WHERE word ~ 's.*a';
 
+
+-- ^ carrot sign, $ sign and [] become optional when we are searching for a SINGLE character in the query
 
 
 -- Find words which start with 't' or 's' and end with 'a' or 'o'
@@ -148,43 +169,28 @@ SELECT *
 FROM words
 WHERE word ~ '^[ts].*[ao]$';
 
--- ^ carrot sign, $ sign and [] become COMPULSORY when we are searching for multiple characters in our query
 
-SELECT * FROM words;
+-- OR without $ sign in the end
+
+SELECT *
+FROM words
+WHERE word ~ '^[ts].*[ao]';
 
 -------------- HOMEWORK ----------------
 -- 1.	Find names which does not start with 'E' and does not end with 'y' from company_employees table.
 -- 2.	Find names whose first character is not 'J', 'B' or 'E' and last character is not 'r' or 't' from company_employees table.
 -- 3.	Find names which start with chars from 'A' to 'F' and third character is 'a' from company_employees table.
 
+
 SELECT * FROM company_employees;
 
 -- For further practice =>  https://regexr.com/
 
-------------- HW SOLUTION -----------------
 
--- 1.	Find names which does not start with 'E' and does not end with 'y' from company_employees table.
-SELECT *
-FROM company_employees
-WHERE name ~ '^[^E](.*)[^y]$';
-
--- 2.	Find names whose first character is not 'J', 'B' or 'E' and last character is not 'r' or 't' from company_employees table.
-SELECT *
-FROM company_employees
-WHERE name ~ '^[^JBE](.*)[^rt]$';
--- 3.	Find names which start with chars from 'A' to 'F' and third character is 'a' from company_employees table.
-SELECT *
-FROM company_employees
-WHERE name~'^[A-F].a(.*)';
-
--- OR
-SELECT *
-FROM company_employees
-WHERE name ~ '^[A-F].[a]';
+SELECT * FROM words;
 
 
---------------- CONCATENATION in SQL ---------------
--- To display multiple columns as a single column, we use ||' '|| sign and concatenate (join the data together)
+--------------------- Concatenation in SQL -----------------------
 
 CREATE TABLE employees1 (
   employee_id numeric(9),
@@ -199,22 +205,61 @@ INSERT INTO employees1 VALUES(12, 'Amy', 'Star');
 INSERT INTO employees1 VALUES(13, 'Brad', 'Pitt');
 INSERT INTO employees1 VALUES(15, 'Chris', 'Way');
 
+
+INSERT INTO employees1 (employee_id, employee_first_name)VALUES(15, 'Ali');
+
 SELECT * FROM employees1;
 
 
--- Merge first name and last name as full name
-SELECT employee_first_name ||' '|| employee_last_name AS full_name
+-- To display multiple columns as a single column, we use ||''|| sign and concatenate the data of the columns
+
+
+SELECT employee_first_name
 FROM employees1;
 
--- Merge id, first name and last name as full info
 
-SELECT employee_id ||' - '|| employee_first_name ||' '|| employee_last_name AS full_info
+SELECT employee_last_name
 FROM employees1;
 
--------------------- GROUP BY CLAUSE --------------
--- It is used for grouping the data together in one field
--- It's mostly used with AGRREGATE FUNCTIONS
---
+-- Merge first name and last name => Full name
+
+
+SELECT employee_first_name ||' '|| employee_last_name AS Full_name
+FROM employees1;
+
+SELECT employee_first_name ||'=> '|| 'This is my first name' AS Full_name
+FROM employees1;
+
+
+-- Merge id, first name and last name => Full Biodata
+
+SELECT employee_id ||' '||  employee_first_name ||' '|| employee_last_name AS Biodata
+FROM employees1;
+
+
+-- ||' '|| => if you want to create a space between the values, add a space in the string quotes.
+
+-- OR use CONCAT() Function
+
+SELECT CONCAT(employee_first_name, ' ', employee_last_name)
+FROM employees1;
+
+
+SELECT LENGTH(employee_first_name)
+FROM employees1;
+
+-- In case of null value in any of the columns, concatenation through thi ssign will ||''|| return null; but the CONCAT() function will return the value that exists in any of the given columns.
+
+-- System.out.println("Age: " +age);
+
+-- System.out.println(age.concat(firstName));
+
+-------------- GROUP BY CLAUSE --------------
+
+-- It is used grouping the data together in one field
+-- It's mostly used with AGGREGATE FUNCTIONS
+
+
 
 CREATE TABLE shopping_list (
     item_id SERIAL PRIMARY KEY,
@@ -248,39 +293,55 @@ VALUES
     ('Meat', 'Beef', 7.20);
 
 
+SELECT * FROM shopping_list;
 
--- Find how much is the total price for each category
-SELECT category, SUM(price) AS total_price_per_category
+
+-- Find how mmuch is the total price for each category
+
+
+SELECT category
+FROM shopping_list;
+
+
+SELECT SUM(price)
+FROM shopping_list;
+
+
+SELECT category, SUM(price)
 FROM shopping_list
 GROUP BY (category);
 
 -- Find average price for each category
-SELECT category, ROUND (AVG(price) , 3)  AS average_price_per_category
+
+SELECT category, ROUND(AVG(price), 3) AS average_price
 FROM shopping_list
 GROUP BY (category);
+
 
 -- Find min, max price and total number of items for each category
-
-
 SELECT category,
-MIN(price) AS Min_Price,
-MAX(price) AS Max_Price,
+MIN(price) AS min_price,
+MAX(price) AS max_price,
 COUNT(item_id)  AS total_num_items
 FROM shopping_list
-GROUP BY (category);
+GROUP BY category;
+
 
 SELECT * FROM shopping_list;
 
-----------------------------
 
+---------------------------------------------
 SELECT * FROM company_employees;
 
--- Find total salary for each employee from company_employees
+
+-- Find total salary for each employee from company_employees table
+
 SELECT name, SUM(salary) AS total_salary
 FROM company_employees
 GROUP BY (name);
 
--- Find number of employees per state in descending order (according to number of employees)
+
+-- Find number of employees per state in descending order
 
 SELECT state, COUNT(id) AS total_num_of_employees
 FROM company_employees
@@ -288,9 +349,162 @@ GROUP BY (state)
 ORDER BY COUNT(id) DESC;
 
 
--- OR we can use the ALIAS as well in place of aggregate function
+-- OR we can also use the ALIAS in place of the aggregate function
+
 
 SELECT state, COUNT(id) AS total_num_of_employees
 FROM company_employees
 GROUP BY (state)
 ORDER BY total_num_of_employees DESC;
+
+-- Find total number of employees for each company which is paying more than 4000
+
+
+SELECT company, COUNT(id) AS total_num_of_employees
+FROM company_employees
+WHERE salary > 4000 -- WHERE condition is used to filter the data; ALWAYS used before GROUP BY Clause
+GROUP BY company;
+
+
+-- Find total salary for each employee and return the ones earning more than 3000
+SELECT name, SUM(salary)
+FROM company_employees
+GROUP BY name
+HAVING SUM(salary) > 3000; -- HAVING clause is used to filter AFTER grouping the data
+
+
+
+SELECT * FROM company_employees;
+-------------------- HAVING CLAUSE -------------------
+
+-- HAVING Clause is used to filter the result of AGGREGATE FUNCTIONS
+-- HAVING Clause works in combination with GROUP BY
+-- Both WHERE condition and HAVING Clause are used to filter the data
+-- DIFFERENCE: WHERE condition filters the individual data BEFORE grouping;
+--			   while HAVING Clause filters the result AFTER grouping.
+-- HAVING Clause works with AGGREGATE FUNCTIONS ONLY.
+
+
+-------------------------------------------------------------
+
+CREATE TABLE MovieReviews (
+    review_id SERIAL PRIMARY KEY,
+    movie_name VARCHAR(50) NOT NULL,
+    reviewer VARCHAR(50) NOT NULL,
+    rating INTEGER CHECK (rating BETWEEN 1 AND 5),
+    review_date DATE NOT NULL
+);
+
+
+INSERT INTO MovieReviews (movie_name, reviewer, rating, review_date) VALUES
+('Inception', 'Alice', 5, '2024-11-01'),
+('Inception', 'Bob', 4, '2024-11-02'),
+('Titanic', 'Alice', 5, '2024-11-03'),
+('Titanic', 'Charlie', 3, '2024-11-03'),
+('Avatar', 'Alice', 4, '2024-11-05'),
+('Avatar', 'David', 5, '2024-11-06'),
+('The Matrix', 'Bob', 3, '2024-11-07'),
+('The Matrix', 'Charlie', 4, '2024-11-08'),
+('The Matrix', 'Alice', 5, '2024-11-09'),
+('Inception', 'David', 5, '2024-11-10'),
+('Titanic', 'Bob', 2, '2024-11-11'),
+('Avatar', 'Charlie', 4, '2024-11-12'),
+('The Last Samurai', 'Goychak', 5, '2024-11-12'),
+('Shawshank Redemption', 'Pelin', 5, '2024-11-20'),
+('Bourne Identity', 'Shukrullah', 5, '2024-11-19'),
+('Skyfall', 'Natalia', 5, '2024-11-18'),
+('Leave the World Behind', 'Pelin', 1, '2024-11-20'),
+('Barbie', 'Shukrullah', 1, '2024-11-08'),
+('Skyfall', 'Natalia', 5, '2024-11-18');
+
+
+SELECT * FROM MovieReviews;
+
+
+-- Count how many reviews have been submitted for each movie.
+
+SELECT movie_name , COUNT(*) AS total_reviews
+FROM MovieReviews
+GROUP BY movie_name;
+
+-- Find the average rating for each movie
+
+SELECT movie_name , ROUND (AVG(rating), 1 )AS average_rating
+FROM MovieReviews
+GROUP BY movie_name;
+
+-- Fiind the movies with more than 2 reviews
+
+SELECT movie_name , COUNT(*) AS total_reviews
+FROM MovieReviews
+GROUP BY movie_name
+HAVING COUNT(*) > 2;
+
+
+-- Find the reviewer who has given the highest rating across all movies
+
+SELECT reviewer, ROUND(AVG(rating), 1) AS average_rating
+FROM MovieReviews
+GROUP BY reviewer
+ORDER BY average_rating DESC
+LIMIT 1;
+
+--  If there are more than one reviewer , you can get them all dynamically through subquery in HAVING CLAUSE
+
+SELECT reviewer, ROUND(AVG(rating), 1) AS average_rating
+FROM MovieReviews
+GROUP BY reviewer
+HAVING ROUND(AVG(rating), 1) = (
+    SELECT ROUND(MAX(avg_rating), 1)
+    FROM (
+        SELECT AVG(rating) AS avg_rating
+        FROM MovieReviews
+        GROUP BY reviewer
+    ) subquery -- This creates a temporary result set of average ratings.
+);
+
+--------------- ADVANCE QUESTIONS- optional --------------
+
+-- Find movies with more than 3 reviews where the average rating is greater than 4.
+
+SELECT movie_name, COUNT(*) AS total_reviews, AVG(rating) AS average_rating
+FROM MovieReviews
+GROUP BY movie_name
+HAVING COUNT(*) > 3 AND AVG(rating) > 4;
+
+-- Identify reviewers who have reviewed at least 2 movies with an average rating below 3.
+
+SELECT reviewer, COUNT(*) AS reviewed_movies, AVG(rating) AS average_rating
+FROM MovieReviews
+GROUP BY reviewer
+HAVING COUNT(*) >= 2 AND AVG(rating) < 3;
+
+--Find the number of movies reviewed on each date where at least 2 movies were reviewed.
+
+SELECT review_date, COUNT(DISTINCT movie_name) AS movies_reviewed
+FROM MovieReviews
+GROUP BY review_date
+HAVING COUNT(DISTINCT movie_name) >= 2;
+
+--List movies with more than 1 review where the maximum rating given is at least twice the minimum rating.
+
+SELECT movie_name, MAX(rating) AS max_rating, MIN(rating) AS min_rating
+FROM MovieReviews
+GROUP BY movie_name
+HAVING COUNT(*) > 1 AND MAX(rating) >= 2 * MIN(rating);
+
+--Find reviewers who have given the exact same rating to all their reviewed movies.
+
+SELECT reviewer, MIN(rating) AS consistent_rating
+FROM MovieReviews
+GROUP BY reviewer
+HAVING MIN(rating) = MAX(rating);
+
+
+
+
+
+
+
+
+SELECT * FROM MovieReviews;
