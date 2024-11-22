@@ -94,23 +94,6 @@ GROUP BY state
 HAVING SUM(number_of_employees) > 100000;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 SELECT state, COUNT(name) AS total_employees
 FROM new_workers
 GROUP BY state
@@ -134,6 +117,44 @@ HAVING MAX(salary) > 7000;
 
 
 SELECT * FROM new_workers;
+
+
+
+---------------------------MovieReviews table------------------------------
+
+SELECT * FROM MovieReviews;
+
+
+-- Find movies with more than 2 reviews where the average rating is more than 4
+
+
+SELECT movie_name, COUNT(*) AS total_reviews, ROUND(AVG(rating), 2) AS average_rating
+FROM MovieReviews
+GROUP BY movie_name
+HAVING COUNT(*) > 2 AND ROUND(AVG(rating), 2) > 4;
+
+-- COUNT(*) => * means ALL VALUES in that column (the one that is used in GROUP BY clause)   .... ALL means even the null rows
+-- COUNT(movie_name) => null rows don't get counted.
+
+
+-- Find the reviewer who has reviewed at least 2 movies with an average rating of 3
+
+SELECT reviewer, COUNT(*) AS reviewed_movies, ROUND (AVG(rating),1) AS average_rating
+FROM MovieReviews
+GROUP BY reviewer
+HAVING COUNT(*) >= 2 AND ROUND (AVG(rating),1) = 3;
+
+
+-- Find the number of movies reviewed on each date where at least 2 movies were reviewed
+
+SELECT review_date, COUNT( DISTINCT movie_name) AS movies_reviewed
+FROM MovieReviews
+GROUP BY review_date
+HAVING COUNT(DISTINCT movie_name) >= 2;
+
+
+SELECT * FROM MovieReviews;
+
 
 
 
@@ -431,31 +452,57 @@ FROM employees_a
 
 ------------------- String Manipulation ------------------
 
-SELECT * FROM new_workers;
+SELECT * FROM new_employees;
+
+INSERT INTO new_employees VALUES('1011', 'Rafael', 15000, '2023-11-25');
+INSERT INTO new_employees VALUES('1012', 'Natalia', 13000, '2023-11-09');
+INSERT INTO new_employees VALUES('1022', 'Kemal', 22000, '2024-11-20');
+INSERT INTO new_employees VALUES('1014', 'Alexander', 25000, '2017-05-01');
+INSERT INTO new_employees VALUES('1004', 'Goya', 23000, '2017-05-02');
+INSERT INTO new_employees VALUES('1013', 'Damon', 11000, '2023-12-12');
+INSERT INTO new_employees VALUES('1033', '  Ali Can  ', 11000, '2023-12-12');
+
+INSERT INTO new_employees VALUES('1029', 'veli', 21000, '2023-12-12');
 
 
--- Retrieve distinct name from new_workers table
+-- Find distinct name from new_employees table
 
 SELECT DISTINCT name
-FROM new_workers;
+FROM new_employees;
 
--- Retrieve distinct names and their length from new_workers table
-SELECT DISTINCT name , LENGTH(name) AS length_of_name
-FROM new_workers;
 
--- To remove spaces from String
+SELECT DISTINCT salary
+FROM new_employees;
+
+-- -- Find distinct names and their length from new_employees table
+
+SELECT DISTINCT name, LENGTH(name) AS name_length
+FROM new_employees;
+
+
+-- Remove spaces from the names
+
 SELECT TRIM(name)
-FROM new_workers;
+FROM new_employees;
 
--- Display state and first 3 characters of state name
-SELECT state, SUBSTRING(state, 1, 3) AS two_chars
-FROM new_workers;
+-- Display the name and first 3 characters of the name only
 
--- Display only first letter as Caps
-SELECT INITCAP(company)
-FROM new_workers;
+SELECT name, SUBSTRING( name, 1, 3)  -- both index are inclusive
+FROM new_employees;
+
+-- Display the names with First letter as capital
+SELECT INITCAP(name)
+FROM new_employees;
+
+-- Display names in Uppercase and Lowercase
+
+SELECT UPPER(name) , LOWER(name)
+FROM new_employees;
+
+-- Remove the spaces completely from the names
+SELECT REPLACE(name, ' ', '') AS names_without_space
+FROM new_employees;
 
 
--- Display names in upper case and state as lowercase
-SELECT UPPER(name), LOWER (state)
-FROM new_workers;
+
+SELECT * FROM new_employees;

@@ -1,0 +1,112 @@
+CREATE TABLE tour_packages (
+    package_id SERIAL PRIMARY KEY,
+    package_name VARCHAR(100),
+    destination VARCHAR(100),
+    price NUMERIC(10, 2),
+    duration_in_days INT
+);
+
+INSERT INTO tour_packages (package_name, destination, price, duration_in_days) VALUES
+('Summer Escape', 'Maldives', 2500.00, 7),
+('Desert Safari', 'Dubai', 1800.00, 5),
+('Cultural Tour', 'Japan', 3000.00, 10),
+('Beach Holiday', 'Maldives', 2100.00, 5),
+('Cultural Connection', 'Abu Dhabi', 3200.00, 8),
+('Snow Top', 'Izmir', 2000.00, 2),
+('Amazon Experience', 'Brazil', 2000.00, 3),
+('City Lights', 'New York', 3000.00, 6);
+
+-----------------------------------------
+
+CREATE TABLE tour_bookings (
+    booking_id SERIAL PRIMARY KEY,
+    package_name VARCHAR(100),
+    customer_name VARCHAR(100),
+    destination VARCHAR(100),
+    booking_status VARCHAR(50)
+);
+
+
+INSERT INTO tour_bookings (package_name, customer_name, destination, booking_status) VALUES
+('Summer Escape', 'Abdul', 'Maldives', 'Confirmed'),
+('Desert Adventure', 'Yusuf', 'Dubai', 'Pending'),
+('Cultural Tour', 'Ichiro', 'Japan', 'Cancelled'),
+('City Lights', 'John', 'New York', 'Confirmed'),
+('Snow Top', 'Aygul', 'Izmir', 'Confirmed'),
+('Amazon Experience', 'Pedro', 'Brazil', 'Pending'),
+('Cultural Connection', 'Muhammad', 'Kenya', 'Pending');
+
+
+----------------------------------------------
+
+--List all distinct destinations across both tables.
+
+SELECT destination FROM tour_packages
+UNION
+SELECT destination FROM tour_bookings;
+
+--List all destinations from both tables, including duplicates.
+
+SELECT destination FROM tour_packages
+UNION ALL
+SELECT destination FROM tour_bookings;
+
+-- Find all package names that are either in TourPackages or booked by customers, allowing duplicates.
+
+SELECT package_name FROM tour_packages
+UNION ALL
+SELECT package_name FROM tour_bookings;
+
+
+-- Find all unique package names that are either offered in TourPackages or booked in TourBookings.
+
+SELECT package_name FROM tour_packages
+UNION
+SELECT package_name FROM tour_bookings;
+
+
+--Find destinations that are present in both TourPackages and TourBookings.
+
+SELECT destination FROM tour_packages
+INTERSECT
+SELECT destination FROM tour_bookings;
+
+--List package names that are both offered in TourPackages and booked by customers.
+
+SELECT package_name FROM tour_packages
+INTERSECT
+SELECT package_name FROM tour_bookings;
+
+
+--Find destinations that are in TourPackages but not in TourBookings.
+
+
+SELECT destination FROM tour_packages
+EXCEPT
+SELECT destination FROM tour_bookings;
+
+--List package names that are in TourPackages but have not been booked by any customer.
+
+
+SELECT package_name FROM tour_packages
+EXCEPT
+SELECT package_name FROM tour_bookings;
+
+--Find destinations that are in TourBookings but not in TourPackages.
+
+SELECT destination FROM tour_packages
+EXCEPT
+SELECT destination FROM tour_bookings;
+
+-- Combination of Operators
+-- Find destinations that are either:
+-- Offered in TourPackages but not booked by customers OR
+-- Booked by customers but not offered in TourPackages.
+
+SELECT destination FROM tour_packages
+EXCEPT
+SELECT destination FROM tour_bookings
+UNION
+SELECT destination FROM tour_bookings
+EXCEPT
+SELECT destination FROM tour_packages;

@@ -1,0 +1,146 @@
+-- Create Table
+
+CREATE TABLE TouristDestinations (
+    destination_id SERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    country VARCHAR(50) NOT NULL,
+    type VARCHAR(50) NOT NULL,
+    famous_for VARCHAR(50) NOT NULL
+);
+
+-- 2. Insert Sample Data
+
+INSERT INTO TouristDestinations (name, country, type, famous_for) VALUES
+('Grand Canyon', 'USA', 'Canyon', 'Natural Beauty'),
+('Eiffel Tower', 'France', 'Monument', 'Architecture'),
+('Great Barrier Reef', 'Australia', 'Reef', 'Marine Life'),
+('Machu Picchu', 'Peru', 'Historical', 'Ancient Ruins'),
+('Mount Fuji', 'Japan', 'Mountain', 'Snow Peak'),
+('Santorini', 'Greece', 'Island', 'Sunsets'),
+('Niagara Falls', 'Canada', 'Waterfall', 'Waterfall Views'),
+('Burj Khalifa', 'UAE', 'Skyscraper', 'Tallest Building'),
+('Yellowstone', 'USA', 'National Park', 'Geothermal Features'),
+('Petra', 'Jordan', 'Archaeological Site', 'Rock Carvings'),
+('Kyoto Temples', 'Japan', 'Temple', 'Cultural Heritage'),
+('Himalayas', 'Nepal', 'Mountain Range', 'Mount Everest'),
+('Sydney Opera House', 'Australia', 'Opera House', 'Performances'),
+('Sahara Desert', 'Morocco', 'Desert', 'Sand Dunes'),
+('Taj Mahal', 'India', 'Monument', 'Mughal Architecture');
+
+
+-- 3. Homework Tasks
+-- Practice with LIKE and %
+
+-- Find destinations whose names start with "G".
+
+SELECT * FROM TouristDestinations WHERE name LIKE 'G%';
+
+-- Find destinations in the USA or whose country name ends with "a".
+
+SELECT * FROM TouristDestinations WHERE country LIKE '%a';
+
+--Find destinations famous for something starting with "S".
+
+SELECT * FROM TouristDestinations WHERE famous_for LIKE 'S%';
+
+-- Find destinations with names containing the word "Tower".
+
+SELECT * FROM TouristDestinations WHERE name LIKE '%Tower%';
+
+
+
+-- Practice with LIKE and _
+-- Find destinations whose names are exactly 11 characters long.
+SELECT * FROM TouristDestinations WHERE name LIKE '___________';
+
+--Find destinations where the second letter in the name is "a".
+
+SELECT * FROM TouristDestinations WHERE name LIKE '_a%';
+
+-- Find destinations where the name ends with "u".
+
+SELECT * FROM TouristDestinations WHERE name LIKE '%u';
+
+
+-- Practice with REGEX_LIKE
+-- Find destinations whose names contain "ai" followed by any character.
+
+SELECT * FROM TouristDestinations WHERE REGEX_LIKE(name, 'ai.');
+
+-- Find destinations in countries starting with "J" or "A".
+SELECT * FROM TouristDestinations WHERE REGEX_LIKE(country, '^J|^A');
+
+-- Find destinations with names that do not contain vowels.
+SELECT * FROM TouristDestinations WHERE NOT REGEX_LIKE(name, '[AEIOUaeiou]');
+
+-- Find destinations whose names contain repeated letters (e.g., "ee" or "tt").
+
+SELECT * FROM TouristDestinations WHERE REGEX_LIKE(name, '(.)\1');
+
+
+-- Find destinations with names starting with "M" and ending with "u".
+SELECT * FROM TouristDestinations WHERE REGEX_LIKE(name, '^M.*u$');
+
+
+-- Find destinations where "Grand" appears at the start of the name.
+
+SELECT * FROM TouristDestinations WHERE REGEX_LIKE(name, '^Grand');
+
+-- Find destinations famous for something starting with a consonant and ending with "e".
+SELECT * FROM TouristDestinations WHERE REGEX_LIKE(famous_for, '^[^AEIOUaeiou].*e$');
+
+-- Find destinations whose names contain at least three vowels in sequence.
+
+SELECT * FROM TouristDestinations WHERE REGEX_LIKE(name, '[AEIOUaeiou]{3,}');
+
+----------------- Additional Tasks ---------------------
+-- Find destinations with names that start and end with the same letter.
+
+SELECT * FROM TouristDestinations WHERE REGEX_LIKE(name, '^(.).*\1$');
+
+-- Find destinations in countries with names containing exactly two vowels.
+SELECT * FROM TouristDestinations WHERE REGEX_LIKE(country, '^[^AEIOUaeiou]*[AEIOUaeiou][^AEIOUaeiou]*[AEIOUaeiou][^AEIOUaeiou]*$');
+
+/*
+
+Regular Expression Breakdown:
+1. ^ - Start of the String
+This asserts that the matching must begin at the start of the string.
+2. [^AEIOUaeiou]* - Zero or More Non-Vowel Characters
+[^AEIOUaeiou]: This is a negated character class meaning it matches any character that is not a vowel (either uppercase or lowercase).
+*: This quantifier means "zero or more" of the preceding element. So this part matches any number of non-vowel characters (including zero).
+3. [AEIOUaeiou] - One Vowel Character
+[AEIOUaeiou]: This is a character class that matches any vowel (uppercase or lowercase).
+This ensures that there is at least one vowel at this point in the string.
+4. [^AEIOUaeiou]* - Zero or More Non-Vowel Characters Again
+This is similar to the previous part, matching zero or more characters that are not vowels.
+5. [AEIOUaeiou] - Another Vowel Character
+Again, this ensures that there is another vowel after some non-vowel characters.
+6. [^AEIOUaeiou]* - Zero or More Non-Vowel Characters Again
+This part matches any additional non-vowel characters after the second vowel.
+7. $ - End of the String
+This asserts that the match must end at the end of the string.
+Overall Meaning of the Pattern:
+The regex pattern ^[^AEIOUaeiou]*[AEIOUaeiou][^AEIOUaeiou]*[AEIOUaeiou][^AEIOUaeiou]*$ will match a string that:
+Starts (^) with any number of non-vowel characters.
+Contains exactly two vowels somewhere in the string.
+Ends ($) with any number of non-vowel characters.
+The string can contain zero or more non-vowel characters, but must contain exactly two vowels.
+*/
+
+-- Find destinations whose famous_for field contains alternating vowels and consonants.
+
+SELECT * FROM TouristDestinations WHERE REGEX_LIKE(famous_for, '^([AEIOUaeiou][^AEIOUaeiou]|[^AEIOUaeiou][AEIOUaeiou])+$');
+
+--Find destinations where the name contains a sequence of at least four consecutive consonants.
+
+SELECT * FROM TouristDestinations WHERE REGEX_LIKE(name, '[^AEIOUaeiou]{4,}');
+
+
+--Find destinations where the name is a palindrome (reads the same forwards and backwards).
+
+SELECT * FROM TouristDestinations WHERE REGEX_LIKE(name, '^(.)(.)(.*\\2\\1$)');
+
+
+
+-- These tasks incorporate more complex search patterns, providing further opportunities to understand and master the REGEX_LIKE operator.
