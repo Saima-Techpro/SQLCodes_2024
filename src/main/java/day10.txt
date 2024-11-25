@@ -1,3 +1,163 @@
+------------------ PL/pgSQL---------------
+-------- Procedural = Reading and processing codes line by line
+-- SQL got control features like IF ELSE, FOR etc.
+-- PL/pgSQL is a block structured languge. Bodies which builds a function are called 'block'
+
+SELECT * FROM movie;
+
+SELECT * FROM actors;
+
+
+--  Declaring Variables
+
+/*
+   do: Anonymous block. Making the return type void
+   $$: to be able to write some special characters without interfering with anything
+
+*/
+
+do $$
+declare
+
+	-- 	variable_name data type := assignment_value
+	-- default value: null
+	counter integer := 1;
+	first_name varchar(40) := 'Saima';
+	last_name varchar(40) := 'Bokhari';
+	payment numeric (4,2) := 20.5;
+
+
+	/*
+		NUMERIC(precision, scale)
+		Number can only contain 4 digits in total and 2 for the decimal
+	*/
+
+begin
+
+	-- raise notice acts like System.out.println(....);
+	-- 	raise notice or warning or error etc.
+	raise notice 'First name: % , Last name: %', first_name , last_name;
+
+end $$;
+
+
+-- TASK: Raise an output: Name LastName received 20.5 USD
+
+do $$
+declare
+
+	first_name varchar(40) := 'Saima';
+	last_name varchar(40) := 'Bokhari';
+	payment numeric (4,2) := 20.5;
+
+
+begin
+
+	raise notice '% % received % USD.', first_name , last_name, payment;
+
+end $$;
+
+-- Task: Name and DifferentName got tickets for 50 USD
+
+do $$
+declare
+
+	name varchar(40) := 'Saima';
+	different_name varchar(40) := 'John';
+	price integer := 50;
+
+begin
+
+	raise notice '%  and % got tickets for % USD.', name , different_name, price;
+
+end $$;
+
+--------------------- Functions ---------------------
+
+/*
+
+SYNTAX:
+
+CREATE OR REPLACE FUNCTION function_name(parameter_name data_type, ...)
+RETURNS return_data_type AS $$
+BEGIN
+    -- Function body (logic or query)
+    RETURN value;
+END;
+$$ LANGUAGE plpgsql;
+
+NOTES:
+
+function_name: The name of the function.
+parameter_name and data_type: Input parameters for the function (optional).
+RETURNS: Specifies the data type of the result (e.g., INTEGER, TEXT, TABLE).
+AS $$ ... $$: Contains the function body.
+LANGUAGE: Specifies the language used (e.g., plpgsql, sql).
+*/
+
+
+-- Example 1: Simple Function (Adding Two Numbers)
+
+CREATE OR REPLACE FUNCTION addition(a INTEGER, b INTEGER)
+RETURNS INTEGER AS
+$$
+BEGIN
+    RETURN a + b;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT addition(5, 10); -- Output: 15
+
+-- Example 2: Function with Conditional Logic
+CREATE OR REPLACE FUNCTION get_discount(amount NUMERIC)
+RETURNS NUMERIC AS
+$$
+BEGIN
+    IF amount > 1000 THEN
+        RETURN amount * 0.10; -- 10% discount
+    ELSE
+        RETURN amount; -- No discount
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT get_discount(1200); -- Output: 120
+SELECT get_discount(800);  -- Output: 0
+
+-- Example 3: Function Returning a Table
+
+CREATE OR REPLACE FUNCTION fetch_active_customers()
+RETURNS TABLE(customer_id INTEGER, customer_name TEXT) AS
+$$
+BEGIN
+    RETURN QUERY SELECT id, name FROM customers WHERE status = 'active';
+END;
+$$ LANGUAGE plpgsql;
+SELECT * FROM fetch_active_customers();
+
+/*
+SYNTAX:
+DROP FUNCTION [IF EXISTS] function_name(parameter_data_types);
+
+*/
+
+DROP FUNCTION addition(INTEGER, INTEGER);
+
+-- OR
+
+DROP FUNCTION addition(INTEGER, INTEGER) CASCADE;
+
+-- Omitting the parameter types can lead to an error if overloaded functions exist.
+-- Use CASCADE if the function is referenced by other database objects and you want to drop those dependencies as well:
+
+-- To ensure the function has been dropped, try running a query that calls the function:
+
+SELECT addition(5, 10); -- should show an error
+
+
+----------------------------CTE - Common Table Expression ----------------------------------
+
+
 /*
 In SQL, CTE stands for Common Table Expression. It is a temporary result set that you can refer to within a SELECT, INSERT, UPDATE, or DELETE statement. CTEs make your queries more readable and maintainable, especially when dealing with complex queries.
 
@@ -119,7 +279,7 @@ SELECT * FROM DirectConnections;
 
 
 
--------------------------------------------
+-------------------------- CASE statement --------------------------
 
 
 /*
